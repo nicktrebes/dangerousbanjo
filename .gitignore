@@ -1,6 +1,7 @@
 # Eclipse files
 .cproject
 .project
+.settings
 
 # Prerequisites
 *.d
