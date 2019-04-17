@@ -14,5 +14,8 @@ clean:
 	rm -rf .build $(KERNEL).iso
 	make -C kernel clean
 
+test: all
+	qemu-system-$(ARCH) -cdrom $(KERNEL).iso
+
 verify: .build/boot/$(KERNEL).bin
 	grub-file --is-x86-multiboot .build/boot/$(KERNEL).bin
