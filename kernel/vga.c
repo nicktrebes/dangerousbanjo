@@ -86,9 +86,8 @@ void vga_scroll(uint8_t lines) {
 }
 
 void vga_write(const char* str) {
-	size_t len = klen(str), n;
-	for (n = 0; n < len; ++n)
-		vga_putc(str[n]);
+	char c;
+	for (; (c = *str); ++str) vga_putc(c);
 }
 
 static void _putc(char c) {
