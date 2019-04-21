@@ -30,8 +30,8 @@
 
 typedef void* kargs_t;
 
-#define kargs_next(list,type) (*(type *)(((size_t)list) - sizeof(type)))
-#define kargs_start(list,param) (list = ((kargs_t)(& param)))
+#define kargs_next(list,type) (*(type*)(((size_t)list) - sizeof(type)))
+#define kargs_start(list,param) (list = ((kargs_t)(&param)))
 
 void* kcopy(void* dst, const void* src, size_t len);
 size_t klen(const char* str);
