@@ -1,10 +1,10 @@
-#ifndef __KUTIL_H__
-#define __KUTIL_H__
+#ifndef __STDARG_H__
+#define __STDARG_H__
 
 /*
  * MIT License
  *
- * kernel/kutil.h
+ * include/stdarg.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,11 +26,18 @@
  * SOFTWARE.
  */
 
-#include <stdarg.h>
+#include <stddef.h>
 
-void* kcopy(void* dst, const void* src, size_t len);
-size_t klen(const char* str);
-void kprintf(const char* fmt, ...);
-void kprintfv(const char* fmt, va_list args);
+#define _STACK_OFFSET(type) ((sizeof(type) % 4) ? (((sizeof(type) / 4) + 1) * 4) : sizeof(type))
+
+#define va_arg(list,type) (*(type*)(((size_t)(list = (va_list)(((size_t)list) \
+	+ _STACK_OFFSET(type)))) \
+	- _STACK_OFFSET(type)))
+#define va_copy(dst,src) (((va_list)dst) = ((va_list)src))
+#define va_end(list) ((void)(list = ((va_list)NULL)))
+#define va_start(list,param) (list = (va_list)(((size_t)(&param)) \
+	+ _STACK_OFFSET(param)))
+
+typedef void* va_list;
 
 #endif

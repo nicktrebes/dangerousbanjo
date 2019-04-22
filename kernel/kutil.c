@@ -23,12 +23,11 @@
  * SOFTWARE.
  */
 
-#include <stddef.h>
 #include <stdint.h>
 #include "kutil.h"
 #include "vga.h"
 
-static int print_arg(kargs_t args, const char* fmt, size_t* ptr);
+static size_t print_arg(const char* fmt, size_t ptr, va_list* argptr);
 static void print_d64(int64_t d64, unsigned width);
 static void print_u64(uint64_t u64, unsigned width);
 static void print_x64(uint64_t u64, unsigned width);
@@ -49,90 +48,73 @@ size_t klen(const char* str) {
 }
 
 void kprintf(const char* fmt, ...) {
-	kargs_t args;
-	size_t pos;
-	unsigned esc = 0;
+	va_list args;
+	va_start(args,fmt);
+	kprintfv(fmt,args);
+	va_end(args);
+}
+
+void kprintfv(const char* fmt, va_list args) {
+	size_t ptr = 0;
 	char c;
-
-	kargs_start(args,fmt);
-	for (pos = 0; (c = fmt[pos]); ++pos) {
-		if (esc) {
-			esc = 0;
-			vga_putc(c);
-		}
-
-		switch (c) {
-		case '\\':
-			esc = 1;
-			break;
-		case '%':
-			if (print_arg(args,fmt,&pos)) {
-				vga_write("\n<%KPRINTF ERROR%>");
-				return;
+	while ((c = fmt[ptr++])) {
+		if (c == '%') {
+			if (!(ptr = print_arg(fmt,ptr,&args))) {
+				vga_write("\n%% KPRINTF ERROR %%\n");
+				break;
 			}
-			break;
-		default:
-			vga_putc(c);
-		}
+		} else vga_putc(c);
 	}
 }
 
-static int print_arg(kargs_t args, const char* fmt, size_t* ptr) {
-	size_t pos = (*ptr + 1);
-	unsigned arg64 = 0, argz = 0, width = 0;
-	char c = fmt[pos];
+static size_t print_arg(const char* fmt, size_t ptr, va_list* argptr) {
+	va_list args = *argptr;
+	unsigned width = 0;
+	int arg64 = 0, argz = 0;
+	char c;
 
-	if (c == '%') {
+	for (c = fmt[ptr]; (c >= '0') && (c <= '9'); c = fmt[++ptr])
+		width = ((width * 10) + (unsigned)(c - '0'));
+
+select:
+	switch (c = fmt[ptr++]) {
+	case '%':
+		if (arg64 || argz || width) return 0;
 		vga_putc('%');
-		*ptr = pos;
+		break;
+	case 's':
+		if (arg64 || argz || width) return 0;
+		vga_write(va_arg(args,const char*));
+		break;
+	case 'l':
+		if (argz) return 0;
+		arg64 = 1;
+		goto select;
+	case 'z':
+		if (arg64) return 0;
+		argz = 1;
+		goto select;
+	case 'd':
+		if (argz) return 0;
+		else if (arg64) print_d64(va_arg(args,int64_t),width);
+		else print_d64((int64_t)va_arg(args,int32_t),width);
+		break;
+	case 'u':
+		if (argz) print_u64((uint64_t)va_arg(args,size_t),width);
+		else if (arg64) print_u64(va_arg(args,uint64_t),width);
+		else print_u64((uint64_t)va_arg(args,uint32_t),width);
+		break;
+	case 'x':
+		if (argz) print_x64((uint64_t)va_arg(args,size_t),width);
+		else if (arg64) print_x64(va_arg(args,uint64_t),width);
+		else print_x64((uint64_t)va_arg(args,uint32_t),width);
+		break;
+	default:
 		return 0;
 	}
 
-	while ((c >= '0') && (c <= '9')) {
-		width = ((width * 10) + (c - '0'));
-		c = fmt[++pos];
-	}
-
-	switch (c) {
-	case 'l':
-		arg64 = 1;
-		++pos;
-		break;
-	case 'z':
-		argz = 1;
-		++pos;
-		break;
-	}
-
-	switch (fmt[pos]) {
-	case 'd':
-		if (arg64) print_d64(kargs_next(args,int64_t),width);
-		else if (argz) return 1;
-		else print_d64((int64_t)kargs_next(args,int32_t),width);
-		break;
-	case 's':
-		if (arg64 || argz || width) return 1;
-		vga_write(kargs_next(args,const char*));
-		break;
-	case 'u':
-		if (arg64) print_u64(kargs_next(args,uint64_t),width);
-		else if (argz) print_u64((uint64_t)kargs_next(args,size_t),width);
-		else print_u64((uint64_t)kargs_next(args,uint32_t),width);
-		break;
-	case 'x':
-		if (arg64) print_x64(kargs_next(args,uint64_t),width);
-		else if (argz) print_x64((uint64_t)kargs_next(args,size_t),width);
-		else print_x64((uint64_t)kargs_next(args,uint32_t),width);
-		break;
-	default:
-		if (argz) {
-			print_u64((uint64_t)kargs_next(args,size_t),width);
-			--pos;
-		} else return 1;
-	}
-
-	*ptr = pos;
-	return 0;
+	*argptr = args;
+	return ptr;
 }
 
 static void print_d64(int64_t d64, unsigned width) {

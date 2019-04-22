@@ -66,7 +66,7 @@ void vga_init(void) {
 void vga_putc(char c) {
 	switch (c) {
 	case '\n':
-		while (_vga_col) _putc(' ');
+		do { _putc(' '); } while (_vga_col);
 		break;
 	case '\r':
 		_vga_col = 0;

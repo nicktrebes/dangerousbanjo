@@ -26,8 +26,10 @@
 #include "kutil.h"
 #include "vga.h"
 
+#define KVERSION_MAJOR (0)
+#define KVERSION_MINOR (1)
+
 void kmain() {
 	vga_init();
-	kprintf("0x%08x\n",0xDEADBEEF);
-	kprintf("%s %u.%u\n","DANGEROUSBANJO",0,1);
+	kprintf("%s %u.%u\n","DANGEROUSBANJO",KVERSION_MAJOR,KVERSION_MINOR);
 }
