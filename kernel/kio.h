@@ -1,10 +1,10 @@
-#ifndef __KUTIL_H__
-#define __KUTIL_H__
+#ifndef __KIO_H__
+#define __KIO_H__
 
 /*
  * MIT License
  *
- * kernel/kutil.h
+ * kernel/kio.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,13 +26,12 @@
  * SOFTWARE.
  */
 
-#include <stdarg.h>
+#include <stdint.h>
 
-void* kcopy(void* dst, const void* src, size_t len);
-size_t klen(const char* str);
-void klogf(const char* fmt, ...);
-void klogfv(const char* fmt, va_list args);
-void kprintf(const char* fmt, ...);
-void kprintfv(const char* fmt, va_list args);
+uint8_t inb(uint16_t port);
+void outb(uint8_t value, uint16_t port);
+void serial_init(uint16_t port);
+uint8_t serial_read(uint16_t port);
+void serial_write(uint16_t port, uint8_t value);
 
 #endif

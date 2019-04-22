@@ -11,11 +11,11 @@ $(KERNEL).iso: .build/boot/grub/grub.cfg verify
 all: $(KERNEL).iso
 
 clean:
-	rm -rf .build $(KERNEL).iso
+	rm -rf .build $(KERNEL).iso kernel.log
 	make -C kernel clean
 
 test: all
-	qemu-system-$(ARCH) -m 1024 -cdrom $(KERNEL).iso
+	qemu-system-$(ARCH) -m 1024 -cdrom $(KERNEL).iso -serial file:kernel.log
 
 verify: .build/boot/$(KERNEL).bin
 	grub-file --is-x86-multiboot .build/boot/$(KERNEL).bin

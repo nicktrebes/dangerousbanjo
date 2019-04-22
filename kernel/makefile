@@ -13,5 +13,7 @@ SOBJ = $(SSRC:.s=.o)
 	mkdir -p ../.build/boot
 	$(CC) -o $@ -ffreestanding -O2 -nostdlib $(SOBJ) $(COBJ) -lgcc
 
+all: ../.build/boot/$(KERNEL).bin
+
 clean:
 	rm -rf *.o

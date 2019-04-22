@@ -1,10 +1,7 @@
-#ifndef __KUTIL_H__
-#define __KUTIL_H__
-
 /*
  * MIT License
  *
- * kernel/kutil.h
+ * kernel/kio.c
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,13 +23,38 @@
  * SOFTWARE.
  */
 
-#include <stdarg.h>
+#include "kio.h"
 
-void* kcopy(void* dst, const void* src, size_t len);
-size_t klen(const char* str);
-void klogf(const char* fmt, ...);
-void klogfv(const char* fmt, va_list args);
-void kprintf(const char* fmt, ...);
-void kprintfv(const char* fmt, va_list args);
+uint8_t inb(uint16_t port) {
+	uint8_t ret;
+	asm volatile ( "inb %1, %0" : "=a"(ret) : "d"(port) );
+	return ret;
+}
 
-#endif
+void outb(uint8_t value, uint16_t port) {
+	asm volatile ( "outb %0, %1" : : "a"(value), "d"(port) );
+}
+
+void serial_init(uint16_t port) {
+	outb((port + 1),0x00);
+	outb((port + 3),0x80);
+	outb((port + 0),0x03);
+	outb((port + 1),0x00);
+	outb((port + 3),0x03);
+	outb((port + 2),0xC7);
+	outb((port + 4),0x0B);
+}
+
+uint8_t serial_read(uint16_t port) {
+start:
+	if (!(inb(port + 5) & 0x01))
+		goto start;
+	return inb(port);
+}
+
+void serial_write(uint16_t port, uint8_t value) {
+start:
+	if (!(inb(port + 5) & 0x20))
+		goto start;
+	outb(value,port);
+}

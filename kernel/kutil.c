@@ -24,13 +24,21 @@
  */
 
 #include <stdint.h>
+#include "kio.h"
 #include "kutil.h"
 #include "vga.h"
 
-static size_t print_arg(const char* fmt, size_t ptr, va_list* argptr);
-static void print_d64(int64_t d64, unsigned width);
-static void print_u64(uint64_t u64, unsigned width);
-static void print_x64(uint64_t u64, unsigned width);
+#define KPORT_COM1 (0x03F8)
+
+typedef void (*kout_t)(char);
+typedef void (*kouts_t)(const char* str);
+
+static void out_log(char c);
+static void out_logstr(const char* str);
+static size_t print_arg(kout_t out, kouts_t outs, const char* fmt, size_t ptr, va_list* argptr);
+static void print_d64(kout_t out, int64_t d64, unsigned width);
+static void print_u64(kout_t out, uint64_t u64, unsigned width);
+static void print_x64(kout_t out, uint64_t u64, unsigned width);
 
 void* kcopy(void* dst, const void* src, size_t len) {
 	size_t len32 = (len / 4), n;
@@ -47,6 +55,26 @@ size_t klen(const char* str) {
 	return len;
 }
 
+void klogf(const char* fmt, ...) {
+	va_list args;
+	va_start(args,fmt);
+	klogfv(fmt,args);
+	va_end(args);
+}
+
+void klogfv(const char* fmt, va_list args) {
+	size_t ptr = 0;
+	char c;
+	while ((c = fmt[ptr++])) {
+		if (c == '%') {
+			if (!(ptr = print_arg(out_log,out_logstr,fmt,ptr,&args))) {
+				out_logstr("\n%% KPRINTF ERROR %%\n");
+				break;
+			}
+		} else vga_putc(c);
+	}
+}
+
 void kprintf(const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
@@ -59,7 +87,7 @@ void kprintfv(const char* fmt, va_list args) {
 	char c;
 	while ((c = fmt[ptr++])) {
 		if (c == '%') {
-			if (!(ptr = print_arg(fmt,ptr,&args))) {
+			if (!(ptr = print_arg(vga_putc,vga_write,fmt,ptr,&args))) {
 				vga_write("\n%% KPRINTF ERROR %%\n");
 				break;
 			}
@@ -67,7 +95,17 @@ void kprintfv(const char* fmt, va_list args) {
 	}
 }
 
-static size_t print_arg(const char* fmt, size_t ptr, va_list* argptr) {
+static void out_log(char c) {
+	serial_write(KPORT_COM1,(uint8_t)(c & 0x7F));
+}
+
+static void out_logstr(const char* str) {
+	char c;
+	for (; (c = *str); ++str)
+		out_log(c);
+}
+
+static size_t print_arg(kout_t out, kouts_t outs, const char* fmt, size_t ptr, va_list* argptr) {
 	va_list args = *argptr;
 	unsigned width = 0;
 	int arg64 = 0, argz = 0;
@@ -80,11 +118,11 @@ select:
 	switch (c = fmt[ptr++]) {
 	case '%':
 		if (arg64 || argz || width) return 0;
-		vga_putc('%');
+		out('%');
 		break;
 	case 's':
 		if (arg64 || argz || width) return 0;
-		vga_write(va_arg(args,const char*));
+		outs(va_arg(args,const char*));
 		break;
 	case 'l':
 		if (argz) return 0;
@@ -96,18 +134,18 @@ select:
 		goto select;
 	case 'd':
 		if (argz) return 0;
-		else if (arg64) print_d64(va_arg(args,int64_t),width);
-		else print_d64((int64_t)va_arg(args,int32_t),width);
+		else if (arg64) print_d64(out,va_arg(args,int64_t),width);
+		else print_d64(out,(int64_t)va_arg(args,int32_t),width);
 		break;
 	case 'u':
-		if (argz) print_u64((uint64_t)va_arg(args,size_t),width);
-		else if (arg64) print_u64(va_arg(args,uint64_t),width);
-		else print_u64((uint64_t)va_arg(args,uint32_t),width);
+		if (argz) print_u64(out,(uint64_t)va_arg(args,size_t),width);
+		else if (arg64) print_u64(out,va_arg(args,uint64_t),width);
+		else print_u64(out,(uint64_t)va_arg(args,uint32_t),width);
 		break;
 	case 'x':
-		if (argz) print_x64((uint64_t)va_arg(args,size_t),width);
-		else if (arg64) print_x64(va_arg(args,uint64_t),width);
-		else print_x64((uint64_t)va_arg(args,uint32_t),width);
+		if (argz) print_x64(out,(uint64_t)va_arg(args,size_t),width);
+		else if (arg64) print_x64(out,va_arg(args,uint64_t),width);
+		else print_x64(out,(uint64_t)va_arg(args,uint32_t),width);
 		break;
 	default:
 		return 0;
@@ -117,21 +155,21 @@ select:
 	return ptr;
 }
 
-static void print_d64(int64_t d64, unsigned width) {
+static void print_d64(kout_t out, int64_t d64, unsigned width) {
 	if (d64 < 0) {
 		d64 = (-d64);
-		vga_putc('-');
+		out('-');
 	}
-	print_u64((uint64_t)d64,width);
+	print_u64(out,(uint64_t)d64,width);
 }
 
-static void print_u64(uint64_t u64, unsigned width) {
+static void print_u64(kout_t out, uint64_t u64, unsigned width) {
 	uint64_t power = 10000000000000000000L;
 	unsigned place = 20;
 	int started = (width >= 20);
 
 	for (; width > 20; --width)
-		vga_putc('0');
+		out('0');
 
 	for (; place; --place) {
 		uint64_t digit = (u64 / power);
@@ -141,20 +179,20 @@ static void print_u64(uint64_t u64, unsigned width) {
 			if (digit || (width >= place))
 				started = 1;
 		}
-		if (started) vga_putc('0' + (char)digit);
+		if (started) out('0' + (char)digit);
 	}
 
-	if (!started) vga_putc('0');
+	if (!started) out('0');
 }
 
 static const char* _charset_hex = "0123456789ABCDEF";
 
-static void print_x64(uint64_t u64, unsigned width) {
+static void print_x64(kout_t out, uint64_t u64, unsigned width) {
 	uint64_t mask = 0xF000000000000000L, place;
 	int shift = 60, started = (width >= 16);
 
 	for (; width > 16; --width)
-		vga_putc('0');
+		out('0');
 
 	for (; shift >= 0; mask >>= 4, shift -= 4) {
 		place = ((u64 & mask) >> shift);
@@ -162,8 +200,8 @@ static void print_x64(uint64_t u64, unsigned width) {
 			if (place || ((width * 4) >= shift))
 				started = 1;
 		}
-		if (started) vga_putc(_charset_hex[place]);
+		if (started) out(_charset_hex[place]);
 	}
 
-	if (!started) vga_putc('0');
+	if (!started) out('0');
 }

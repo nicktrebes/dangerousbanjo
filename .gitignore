@@ -2,6 +2,7 @@
 .build
 .build/*
 *.iso
+*.log
 
 # Eclipse files
 .cproject
