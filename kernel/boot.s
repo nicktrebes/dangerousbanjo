@@ -19,7 +19,7 @@
 .section .bootstrap_stack, "aw", @nobits
 .align 16
 stack_bottom:
-.skip 16384 # 16 KiB
+.skip 16384
 stack_top:
 
 # Allocate pages for paging
@@ -47,6 +47,12 @@ _start:
 	jl 2f
 	cmpl $(_kernel_end - HHBASE), %esi
 	jge 3f
+
+	# Map physical address as "present, writable". Note that this maps
+	# .text and .rodata as writable. Mind security and map them as non-writable.
+	movl %esi, %edx
+	orl $0x003, %edx
+	movl %edx, (%edi)
 
 2:
 	# Size of page is 4096 bytes.
@@ -87,6 +93,7 @@ _start:
 	# Set up stack
 	mov $stack_top, %esp
 	# Push multiboot info and magic
+	addl $(HHBASE), %ebx
 	push %eax
 	push %ebx
 
