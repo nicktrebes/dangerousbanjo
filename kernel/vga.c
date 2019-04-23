@@ -58,7 +58,7 @@ void vga_cursor(uint8_t row, uint8_t col) {
 }
 
 void vga_init(void) {
-	_vga_buf = (uint16_t*)0xB8000;
+	_vga_buf = (uint16_t*)0xC03FF000;
 	vga_color(VGA_COLOR_LIGHT_GREY,VGA_COLOR_BLACK);
 	vga_clear();
 }

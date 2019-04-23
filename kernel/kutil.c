@@ -78,9 +78,9 @@ void klogfv(const char* fmt, va_list args) {
 }
 
 void kpanic(const char* msg) {
-	vga_write("\n\nKERNEL PANIC: ");
+	vga_write("\nKERNEL PANIC: ");
 	vga_write(msg);
-	vga_putc('\n');
+	vga_write("!\n");
 	khalt();
 }
 

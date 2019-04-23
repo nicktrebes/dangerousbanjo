@@ -11,7 +11,7 @@ SOBJ = $(SSRC:.s=.o)
 
 ../.build/boot/$(KERNEL).bin: $(COBJ) $(SOBJ) linker.ld
 	mkdir -p ../.build/boot
-	$(CC) -o $@ -ffreestanding -O2 -nostdlib $(SOBJ) $(COBJ) -lgcc
+	$(CC) -T linker.ld -o $@ -ffreestanding -O2 -nostdlib $(SOBJ) $(COBJ) -lgcc
 
 all: ../.build/boot/$(KERNEL).bin
 

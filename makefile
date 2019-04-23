@@ -15,7 +15,7 @@ clean:
 	make -C kernel clean
 
 test: all
-	qemu-system-$(ARCH) -m 1024 -cdrom $(KERNEL).iso -serial file:kernel.log
+	qemu-system-$(ARCH) -m 4G -cdrom $(KERNEL).iso -serial file:kernel.log
 
 verify: .build/boot/$(KERNEL).bin
 	grub-file --is-x86-multiboot .build/boot/$(KERNEL).bin

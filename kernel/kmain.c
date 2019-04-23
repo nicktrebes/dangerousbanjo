@@ -38,6 +38,9 @@ void kmain(multiboot_info_t* mbd, uint32_t magic) {
 	vga_init();
 	kprintf("%s %u.%u\n","DANGEROUSBANJO",KVERSION_MAJOR,KVERSION_MINOR);
 
+	if (magic != MULTIBOOT_HEADER_MAGIC)
+		kpanic("INVALID MULTIBOOT INFO");
+
 	kprintf("%s","\nInitializing Serial Ports:\n");
 	for (n = 1; n <= 4; ++n) {
 		uint16_t port = bda[n - 1];
