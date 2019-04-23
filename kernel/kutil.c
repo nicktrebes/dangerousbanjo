@@ -33,6 +33,8 @@
 typedef void (*kout_t)(char);
 typedef void (*kouts_t)(const char* str);
 
+extern void khalt(void);
+
 static void out_log(char c);
 static void out_logstr(const char* str);
 static size_t print_arg(kout_t out, kouts_t outs, const char* fmt, size_t ptr, va_list* argptr);
@@ -73,6 +75,13 @@ void klogfv(const char* fmt, va_list args) {
 			}
 		} else vga_putc(c);
 	}
+}
+
+void kpanic(const char* msg) {
+	vga_write("\n\nKERNEL PANIC: ");
+	vga_write(msg);
+	vga_putc('\n');
+	khalt();
 }
 
 void kprintf(const char* fmt, ...) {

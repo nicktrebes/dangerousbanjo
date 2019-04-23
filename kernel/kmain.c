@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * kernel/kmain.c
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,12 +25,13 @@
 
 #include "kio.h"
 #include "kutil.h"
+#include "multiboot.h"
 #include "vga.h"
 
 #define KVERSION_MAJOR (0)
 #define KVERSION_MINOR (1)
 
-void kmain() {
+void kmain(multiboot_info_t* mbd, uint32_t magic) {
 	const uint16_t* bda = (const uint16_t*)0x0400;
 	uint32_t n;
 

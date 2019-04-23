@@ -32,6 +32,7 @@ void* kcopy(void* dst, const void* src, size_t len);
 size_t klen(const char* str);
 void klogf(const char* fmt, ...);
 void klogfv(const char* fmt, va_list args);
+void kpanic(const char* msg);
 void kprintf(const char* fmt, ...);
 void kprintfv(const char* fmt, va_list args);
 
