@@ -31,6 +31,8 @@ static const uint8_t VGA_HEIGHT = 25;
 static const uint8_t VGA_TAB = 4;
 static const uint8_t VGA_WIDTH = 80;
 
+#define VGA_ENTRY(r,c) ((r * VGA_WIDTH) + c)
+
 static uint16_t* _vga_buf;
 static uint16_t _vga_color;
 static uint8_t _vga_col, _vga_row;
@@ -83,7 +85,23 @@ void vga_putc(char c) {
 }
 
 void vga_scroll(uint8_t lines) {
-	// TODO
+	uint16_t entry = (_vga_color | ((uint16_t)' '));
+	uint8_t col, row;
+
+	if (lines >= VGA_HEIGHT) {
+		vga_clear();
+		return;
+	}
+
+	for (row = 0; row < (VGA_HEIGHT - lines); ++row) {
+		for (col = 0; col < VGA_WIDTH; ++col)
+			_vga_buf[VGA_ENTRY(row,col)] = _vga_buf[VGA_ENTRY((row + lines),col)];
+	}
+
+	for (; row < VGA_HEIGHT; ++row) {
+		for (col = 0; col < VGA_WIDTH; ++col)
+			_vga_buf[VGA_ENTRY(row,col)] = entry;
+	}
 }
 
 void vga_write(const char* str) {
@@ -92,7 +110,7 @@ void vga_write(const char* str) {
 }
 
 static void _putc(char c) {
-	_vga_buf[(_vga_row * VGA_WIDTH) + _vga_col] = (_vga_color | ((uint16_t)c));
+	_vga_buf[VGA_ENTRY(_vga_row,_vga_col)] = (_vga_color | ((uint16_t)c));
 	if ((++_vga_col) >= VGA_WIDTH) {
 		_vga_col = 0;
 		if ((++_vga_row) >= VGA_HEIGHT) {

@@ -54,6 +54,5 @@ void kmain() {
 		}
 	}
 
-	klogf("%s","Serial logging successful!\n");
 	kprintf("%s","\nDone!\n");
 }
