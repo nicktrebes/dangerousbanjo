@@ -7,15 +7,17 @@ SECTIONS {
 		*(.text)
 	}
 	.rodata ALIGN(4K) : AT(ADDR(.rodata) - 0xC0000000) {
-		*(.rodata)
+		*(.rodata*)
+		*(.eh_frame)
 	}
+	_kernel_data = .;
 	.data ALIGN(4K) : AT(ADDR(.data) - 0xC0000000) {
 		*(.data)
 	}
 	.bss ALIGN(4K) : AT(ADDR(.bss) - 0xC0000000) {
 		*(COMMON)
 		*(.bss)
-		*(.bootstrap_stack)
+		*(.boot_stack)
 	}
 	_kernel_end = .;
 }

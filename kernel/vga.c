@@ -24,6 +24,7 @@
  */
 
 #include "kutil.h"
+#include "kvaddr.h"
 #include "vga.h"
 
 static const uint8_t VGA_HEIGHT = 25;
@@ -58,7 +59,7 @@ void vga_cursor(uint8_t row, uint8_t col) {
 }
 
 void vga_init(void) {
-	_vga_buf = (uint16_t*)0xC03FF000;
+	_vga_buf = (uint16_t*)KVADDR_VGA_BUF;
 	vga_color(VGA_COLOR_LIGHT_GREY,VGA_COLOR_BLACK);
 	vga_clear();
 }

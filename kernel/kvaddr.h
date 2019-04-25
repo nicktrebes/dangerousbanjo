@@ -1,3 +1,6 @@
+#ifndef __KVADDR_H__
+#define __KVADDR_H__
+
 /*
  * MIT License
  *
@@ -23,37 +26,7 @@
  * SOFTWARE.
  */
 
-#include "kio.h"
-#include "kutil.h"
-#include "kvaddr.h"
-#include "multiboot.h"
-#include "vga.h"
+#define KVADDR_BIOS_DATA (0xC0000400)
+#define KVADDR_VGA_BUF   (0xC00B8000)
 
-#define KVERSION_MAJOR (0)
-#define KVERSION_MINOR (1)
-
-extern multiboot_info_t* kmultiboot_info;
-extern uint32_t kmultiboot_magic;
-
-void kmain() {
-	const uint16_t* bda = (const uint16_t*)KVADDR_BIOS_DATA;
-	uint32_t n;
-
-	vga_init();
-	kprintf("%s %u.%u\n","DANGEROUSBANJO",KVERSION_MAJOR,KVERSION_MINOR);
-
-	if (kmultiboot_magic != MULTIBOOT_BOOTLOADER_MAGIC)
-		kpanic("INVALID MULTIBOOT INFO");
-
-	kprintf("%s","\nInitializing Serial Ports:\n");
-	for (n = 1; n <= 4; ++n) {
-		uint16_t port = bda[n - 1];
-		if (port) {
-			kprintf("%s%u=0x%x\n","COM",n,(uint32_t)port);
-			serial_init(port);
-		}
-	}
-
-	klogf("%s","Serial logging successful!\n");
-	kprintf("%s","\nDone!\n");
-}
+#endif

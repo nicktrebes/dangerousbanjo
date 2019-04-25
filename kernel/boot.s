@@ -1,11 +1,36 @@
-/* https://wiki.osdev.org/Bare_bones#Bootstrap_Assembly */
+/*
+ * MIT License
+ *
+ * kernel/boot.s
+ * Copyright (C) 2019 Nick Trebes
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
-.set ALIGN,    1<<0             /* align loaded modules on page boundaries */
-.set MEMINFO,  1<<1             /* provide memory map */
-.set FLAGS,    ALIGN | MEMINFO  /* this is the Multiboot 'flag' field */
-.set MAGIC,    0x1BADB002       /* 'magic number' lets bootloader find the header */
-.set CHECKSUM, -(MAGIC + FLAGS) /* checksum of above, to prove we are multiboot */
+# Define multiboot header constants
+.set ALIGN,    (1<<0)
+.set MEMINFO,  (1<<1)
+.set FLAGS,    (ALIGN | MEMINFO)
+.set MAGIC,    (0x1BADB002)
+.set CHECKSUM, (-(MAGIC + FLAGS))
 
+# Define higher-half base address
 .set HHBASE, 0xC0000000
 
 # Multiboot header
@@ -16,7 +41,7 @@
 .long CHECKSUM
 
 # Allocate stack
-.section .bootstrap_stack, "aw", @nobits
+.section .boot_stack, "aw", @nobits
 .align 16
 stack_bottom:
 .skip 16384
@@ -29,85 +54,91 @@ boot_pd:
 .skip 4096
 boot_pt0:
 .skip 4096
+# Declare kernel variables for multiboot info and magic
+.global kmultiboot_info
+.type kmultiboot_info, @object
+kmultiboot_info:
+.skip 4
+.global kmultiboot_magic
+.type kmultiboot_magic, @object
+kmultiboot_magic:
+.skip 4
 
 .section .text
 .global _start
 .type _start, @function
 _start:
+	# Move multiboot info and magic to kernel variables
+	movl $(kmultiboot_info - HHBASE), %edi
+	addl $(HHBASE), %ebx
+	movl %ebx, (%edi)
+	movl $(kmultiboot_magic - HHBASE), %edi
+	movl %eax, (%edi)
+
 	# Physical address of boot_pt0
 	movl $(boot_pt0 - HHBASE), %edi
-	# Map to 0
 	movl $0, %esi
-	# Map 1023 pages; 1024 is VGA
-	movl $1023, %ecx
+	movl $1024, %ecx
 
 1:
-	# Only map the kernel
-	cmpl $(_kernel_start - HHBASE), %esi
-	jl 2f
-	cmpl $(_kernel_end - HHBASE), %esi
-	jge 3f
-
-	# Map physical address as "present, writable". Note that this maps
-	# .text and .rodata as writable. Mind security and map them as non-writable.
+	# Physical page address
 	movl %esi, %edx
-	orl $0x003, %edx
-	movl %edx, (%edi)
+	# Map VGA text buffer as "present, writable"
+	cmpl $0x000B8000, %esi
+	je 2f
+	# Map kernel data as "present, writable"
+	cmpl $(_kernel_data), %esi
+	jge 2f
+	# Map kernel text/rodata and other data as "present"
+	jmp 3f
 
 2:
-	# Size of page is 4096 bytes.
-	addl $4096, %esi
-	# Size of entries in boot_page_table1 is 4 bytes.
-	addl $4, %edi
-	# Loop to the next entry if we haven't finished.
-	loop 1b
+	# "present, writable"
+	orl $0x003, %edx
+	jmp 4f
 
 3:
-	# Map VGA video memory to 0xC03FF000 as "present, writable".
-	movl $(0x000B8000 | 0x003), boot_pt0 - HHBASE + 1023 * 4
-	# Map the page table to both virtual addresses 0x00000000 and 0xC0000000.
+	# "present"
+	orl $0x001, %edx
+
+4:
+	# Map page with appropriate flags
+	movl %edx, (%edi)
+	addl $4096, %esi
+	addl $4, %edi
+	loop 1b
+
+5:
+	# Identity map
 	movl $(boot_pt0 - HHBASE + 0x003), boot_pd - HHBASE + 0
+	# Higher-half map
 	movl $(boot_pt0 - HHBASE + 0x003), boot_pd - HHBASE + 768 * 4
 
-	# Set cr3 to the address of the boot_page_directory.
+	# Set cr3 to the address of the page directory
 	movl $(boot_pd - HHBASE), %ecx
 	movl %ecx, %cr3
 
-	# Enable paging and the write-protect bit.
+	# Enable paging and the write-protect bit
 	movl %cr0, %ecx
 	orl $0x80010000, %ecx
 	movl %ecx, %cr0
 
-	# Jump to higher half with an absolute jump.
-	lea 4f, %ecx
+	# Jump to higher half with an absolute jump
+	lea 6f, %ecx
 	jmp *%ecx
 
-4:
-	# Unmap the identity mapping as it is now unnecessary.
+6:
+	# Remove the identity mapping
 	movl $0, boot_pd + 0
 
-	# Reload crc3 to force a TLB flush so the changes to take effect.
+	# Reload crc3 to force a TLB flush
 	movl %cr3, %ecx
 	movl %ecx, %cr3
 
 	# Set up stack
 	mov $stack_top, %esp
-	# Push multiboot info and magic
-	addl $(HHBASE), %ebx
-	push %eax
-	push %ebx
 
-	/*
-	This is a good place to initialize crucial processor state before the
-	high-level kernel is entered. It's best to minimize the early
-	environment where crucial features are offline. Note that the
-	processor is not fully initialized yet: Features such as floating
-	point instructions and instruction set extensions are not initialized
-	yet. The GDT should be loaded here. Paging should be enabled here.
-	C++ features such as global constructors and exceptions will require
-	runtime support to work as well.
-	*/
-
+	# Enter C environment
 	call kmain
 
 .global khalt

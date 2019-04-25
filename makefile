@@ -14,6 +14,9 @@ clean:
 	rm -rf .build $(KERNEL).iso kernel.log
 	make -C kernel clean
 
+objdump: .build/boot/$(KERNEL).bin
+	$(OBJDUMP) -t .build/boot/$(KERNEL).bin | grep c01 | sort -n
+
 test: all
 	qemu-system-$(ARCH) -m 4G -cdrom $(KERNEL).iso -serial file:kernel.log
 
