@@ -73,7 +73,7 @@ void klogfv(const char* fmt, va_list args) {
 				out_logstr("\n%% KPRINTF ERROR %%\n");
 				break;
 			}
-		} else vga_putc(c);
+		} else out_log(c);
 	}
 }
 
@@ -173,7 +173,7 @@ static void print_d64(kout_t out, int64_t d64, unsigned width) {
 }
 
 static void print_u64(kout_t out, uint64_t u64, unsigned width) {
-	uint64_t power = 10000000000000000000L;
+	uint64_t power = 10000000000000000000UL;
 	unsigned place = 20;
 	int started = (width >= 20);
 
@@ -206,7 +206,7 @@ static void print_x64(kout_t out, uint64_t u64, unsigned width) {
 	for (; shift >= 0; mask >>= 4, shift -= 4) {
 		place = ((u64 & mask) >> shift);
 		if (started == 0) {
-			if (place || ((width * 4) >= shift))
+			if (place || ((width * 4) >= (unsigned)shift))
 				started = 1;
 		}
 		if (started) out(_charset_hex[place]);

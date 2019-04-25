@@ -1,7 +1,10 @@
+#ifndef __KPAGE_H__
+#define __KPAGE_H__
+
 /*
  * MIT License
  *
- * kernel/kmain.c
+ * kernel/kpage.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,41 +26,14 @@
  * SOFTWARE.
  */
 
-#include "kio.h"
-#include "kpage.h"
-#include "kutil.h"
-#include "kvaddr.h"
-#include "multiboot.h"
-#include "vga.h"
+#include <stdint.h>
 
-#define KVERSION_MAJOR (0)
-#define KVERSION_MINOR (3)
+#define KPAGE_SIZE (4096)
 
-//extern multiboot_info_t* kmultiboot_info;
-extern uint32_t kmultiboot_magic;
+typedef uint32_t kpage_t;
 
-void kmain() {
-	const uint16_t* bda = (const uint16_t*)KVADDR_BIOS_DATA;
-	uint32_t n;
+kpage_t kpage_alloc();
+void kpage_free(kpage_t page);
+void kpage_init();
 
-	vga_init();
-	kprintf("%s %u.%u\n","DANGEROUSBANJO",KVERSION_MAJOR,KVERSION_MINOR);
-
-	if (kmultiboot_magic != MULTIBOOT_BOOTLOADER_MAGIC)
-		kpanic("INVALID MULTIBOOT INFO");
-
-	kprintf("%s","\nInitializing serial ports:\n");
-	for (n = 1; n <= 4; ++n) {
-		uint16_t port = bda[n - 1];
-		if (port) {
-			kprintf("%s%u=0x%x\n","COM",n,(uint32_t)port);
-			serial_init(port);
-		}
-	}
-
-	kprintf("%s","Initializing memory map...");
-	kpage_init();
-	kprintf("%s","done.\n");
-
-	kprintf("%s","\nGoodbye!\n");
-}
+#endif
