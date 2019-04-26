@@ -57,15 +57,15 @@ void kmain() {
 		}
 	}
 
-	kprintf("%s","Initializing GDT...");
+	kprintf("%s","Initializing segments...");
 	kinit_gdt();
 	kprintf("%s","done.\n");
 
-	kprintf("%s","Initializing memory map...");
-	kpage_init();
+	kprintf("%s","Initializing page allocator...");
+	kinit_page();
 	kprintf("%s","done.\n");
 
-	kprintf("%s","Initializing IDT...");
+	kprintf("%s","Initializing interrupts...");
 	kinit_idt();
 	kprintf("%s","done.\n");
 

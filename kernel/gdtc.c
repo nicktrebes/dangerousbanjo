@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * kernel/gdt.c
+ * kernel/gdtc.c
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy

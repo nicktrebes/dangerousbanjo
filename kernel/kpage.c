@@ -38,6 +38,20 @@ static uint32_t _kpage_pcount, _kpage_start;
 static kpage_t _alloc_page();
 static void _free_page(kpage_t page);
 
+void kinit_page() {
+	uint32_t end = (_kernel_end - 0xC0000000);
+	uint32_t n;
+
+	_kpage_pcount = 0;
+	_kpage_start = ((end % KPAGE_SIZE) ?
+		((end - (end % KPAGE_SIZE)) + KPAGE_SIZE) : end);
+
+	for (n = 0; n < KPAGE_MAPSIZE; ++n)
+		_kpage_map[n] = 0;
+	for (n = 0; n < KPAGE_PREALLOC; ++n)
+		_kpage_pre[n] = 0;
+}
+
 kpage_t kpage_alloc() {
 	if (_kpage_pcount == 0) {
 		uint32_t n;
@@ -56,20 +70,6 @@ void kpage_free(kpage_t page) {
 	if (_kpage_pcount < KPAGE_PREALLOC)
 		_kpage_pre[_kpage_pcount++] = page;
 	else _free_page(page);
-}
-
-void kpage_init() {
-	uint32_t end = (_kernel_end - 0xC0000000);
-	uint32_t n;
-
-	_kpage_pcount = 0;
-	_kpage_start = ((end % KPAGE_SIZE) ?
-		((end - (end % KPAGE_SIZE)) + KPAGE_SIZE) : end);
-
-	for (n = 0; n < KPAGE_MAPSIZE; ++n)
-		_kpage_map[n] = 0;
-	for (n = 0; n < KPAGE_PREALLOC; ++n)
-		_kpage_pre[n] = 0;
 }
 
 static kpage_t _alloc_page() {

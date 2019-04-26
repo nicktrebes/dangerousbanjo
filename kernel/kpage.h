@@ -32,8 +32,8 @@
 
 typedef uint32_t kpage_t;
 
+void kinit_page();
 kpage_t kpage_alloc();
 void kpage_free(kpage_t page);
-void kpage_init();
 
 #endif
