@@ -1,10 +1,10 @@
-#ifndef __KVADDR_H__
-#define __KVADDR_H__
+#ifndef __GDT_H__
+#define __GDT_H__
 
 /*
  * MIT License
  *
- * kernel/kmain.c
+ * kernel/gdt.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,8 +26,10 @@
  * SOFTWARE.
  */
 
-#define KVADDR_HHBASE    (0xC0000000)
-#define KVADDR_BIOS_DATA (0xC0000400)
-#define KVADDR_VGA_BUF   (0xC00B8000)
+#include <stdint.h>
+
+uint32_t ktss[26];
+
+void kinit_gdt(void);
 
 #endif

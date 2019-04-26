@@ -1,10 +1,7 @@
-#ifndef __KVADDR_H__
-#define __KVADDR_H__
-
 /*
  * MIT License
  *
- * kernel/kmain.c
+ * kernel/load_gdt.s
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,8 +23,19 @@
  * SOFTWARE.
  */
 
-#define KVADDR_HHBASE    (0xC0000000)
-#define KVADDR_BIOS_DATA (0xC0000400)
-#define KVADDR_VGA_BUF   (0xC00B8000)
+ .section .data
+ .align 4
+ gdtr:
+ .word
+ .long
 
-#endif
+ .section .text
+ .global load_gdt
+ .type load_gdt, @function
+ load_gdt:
+	movl 4(%esp), %eax
+	movl %eax, gdtr + 2
+	movw 8(%esp), %ax
+	movw %ax, gdtr
+	lgdt gdtr
+	ret

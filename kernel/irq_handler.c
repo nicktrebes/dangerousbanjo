@@ -1,10 +1,7 @@
-#ifndef __KVADDR_H__
-#define __KVADDR_H__
-
 /*
  * MIT License
  *
- * kernel/kmain.c
+ * kernel/irq_handler.c
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,8 +23,92 @@
  * SOFTWARE.
  */
 
-#define KVADDR_HHBASE    (0xC0000000)
-#define KVADDR_BIOS_DATA (0xC0000400)
-#define KVADDR_VGA_BUF   (0xC00B8000)
+#include "kio.h"
 
-#endif
+void irq0_handler(void) {
+	// TODO
+	outb(0x20,0x20);
+}
+
+void irq1_handler(void) {
+	// TODO
+	outb(0x20,0x20);
+}
+
+void irq2_handler(void) {
+	// TODO
+	outb(0x20,0x20);
+}
+
+void irq3_handler(void) {
+	// TODO
+	outb(0x20,0x20);
+}
+
+void irq4_handler(void) {
+	// TODO
+	outb(0x20,0x20);
+}
+
+void irq5_handler(void) {
+	// TODO
+	outb(0x20,0x20);
+}
+
+void irq6_handler(void) {
+	// TODO
+	outb(0x20,0x20);
+}
+
+void irq7_handler(void) {
+	// TODO
+	outb(0x20,0x20);
+}
+
+void irq8_handler(void) {
+	// TODO
+	outb(0xA0,0x20);
+	outb(0x20,0x20);
+}
+
+void irq9_handler(void) {
+	// TODO
+	outb(0xA0,0x20);
+	outb(0x20,0x20);
+}
+
+void irq10_handler(void) {
+	// TODO
+	outb(0xA0,0x20);
+	outb(0x20,0x20);
+}
+
+void irq11_handler(void) {
+	// TODO
+	outb(0xA0,0x20);
+	outb(0x20,0x20);
+}
+
+void irq12_handler(void) {
+	// TODO
+	outb(0xA0,0x20);
+	outb(0x20,0x20);
+}
+
+void irq13_handler(void) {
+	// TODO
+	outb(0xA0,0x20);
+	outb(0x20,0x20);
+}
+
+void irq14_handler(void) {
+	// TODO
+	outb(0xA0,0x20);
+	outb(0x20,0x20);
+}
+
+void irq15_handler(void) {
+	// TODO
+	outb(0xA0,0x20);
+	outb(0x20,0x20);
+}

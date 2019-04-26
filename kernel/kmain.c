@@ -23,6 +23,8 @@
  * SOFTWARE.
  */
 
+#include "gdt.h"
+#include "idt.h"
 #include "kio.h"
 #include "kpage.h"
 #include "kutil.h"
@@ -55,8 +57,16 @@ void kmain() {
 		}
 	}
 
+	kprintf("%s","Initializing GDT...");
+	kinit_gdt();
+	kprintf("%s","done.\n");
+
 	kprintf("%s","Initializing memory map...");
 	kpage_init();
+	kprintf("%s","done.\n");
+
+	kprintf("%s","Initializing IDT...");
+	kinit_idt();
 	kprintf("%s","done.\n");
 
 	kprintf("%s","\nGoodbye!\n");

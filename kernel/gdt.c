@@ -1,10 +1,7 @@
-#ifndef __KVADDR_H__
-#define __KVADDR_H__
-
 /*
  * MIT License
  *
- * kernel/kmain.c
+ * kernel/gdt.c
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,8 +23,43 @@
  * SOFTWARE.
  */
 
-#define KVADDR_HHBASE    (0xC0000000)
-#define KVADDR_BIOS_DATA (0xC0000400)
-#define KVADDR_VGA_BUF   (0xC00B8000)
+#include "gdt.h"
+#include "kutil.h"
 
-#endif
+extern void load_gdt();
+
+static uint8_t _gdt_buf[32];
+
+static void _gdt_entry(uint8_t* entry, uint32_t base, uint32_t limit, uint8_t type);
+
+void kinit_gdt() {
+	_gdt_entry((&_gdt_buf[0]),0,0,0);
+	_gdt_entry((&_gdt_buf[8]),0,0xFFFFFFFF,0x9A);
+	_gdt_entry((&_gdt_buf[16]),0,0xFFFFFFFF,0x92);
+	_gdt_entry((&_gdt_buf[24]),(uint32_t)ktss,(uint32_t)sizeof(ktss),0x89);
+	load_gdt(_gdt_buf,sizeof(_gdt_buf));
+}
+
+static void _gdt_entry(uint8_t* entry, uint32_t base, uint32_t limit, uint8_t type) {
+	// Check limit and adjust granularity if necessary
+	if (limit > 65536) {
+		if ((limit & 0x0FFF) != 0x0FFF)
+			kpanic("INVALID GDT ENTRY");
+		limit >>= 12;
+		entry[6] = 0xC0;
+	} else entry[6] = 0x40;
+
+	// Encode limit
+	entry[0] = (uint8_t)(limit & 0x0FF);
+	entry[1] = (uint8_t)((limit >> 8) & 0x0FF);
+	entry[6] |= (uint8_t)((limit >> 16) & 0x0F);
+
+	// Encode base
+	entry[2] = (uint8_t)(base & 0x0FF);
+	entry[3] = (uint8_t)((base >> 8) & 0x0FF);
+	entry[4] = (uint8_t)((base >> 16) & 0x0FF);
+	entry[7] = (uint8_t)((base >> 24) & 0x0FF);
+
+	// Encode type
+	entry[5] = type;
+}
