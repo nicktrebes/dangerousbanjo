@@ -23,6 +23,11 @@
  * SOFTWARE.
  */
 
+.section .data
+idtr:
+.word
+.long
+
 .section .text
 
 .extern irq0_handler
@@ -173,7 +178,10 @@ irq15:
 .global load_idt
 .type load_idt, @function
 load_idt:
-	movl 4(%esp), %edx
-	lidt (%edx)
+	movl 4(%esp), %eax
+	movl %eax, idtr + 2
+	movw 8(%esp), %ax
+	movw %ax, idtr
+	lidt idtr
 	sti
 	ret

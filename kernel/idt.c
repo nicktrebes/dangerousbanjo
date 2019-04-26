@@ -58,9 +58,6 @@ static idt_entry_t _idt[256];
 static void _load_irq(uint8_t idx, uint32_t irq_addr);
 
 void kinit_idt(void) {
-	uint32_t idt_addr;
-	uint32_t idt_ptr[2];
-
 	/* remapping the PIC */
 	outb(0x20,0x11);
 	outb(0xA0,0x11);
@@ -90,10 +87,7 @@ void kinit_idt(void) {
 	_load_irq(46,(uint32_t)irq14);
 	_load_irq(47,(uint32_t)irq15);
 
-	idt_addr = (uint32_t)_idt;
-	idt_ptr[0] = (((idt_addr & 0x0000FFFF) << 16) + (sizeof(idt_entry_t) * 256));
-	idt_ptr[1] = ((idt_addr >> 16) & 0x0000FFFF);
-	load_idt(idt_ptr);
+	load_idt(_idt,(sizeof(idt_entry_t) * 256));
 }
 
 static void _load_irq(uint8_t idx, uint32_t irq_addr) {
