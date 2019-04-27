@@ -55,14 +55,14 @@ void CDECL int14_handler(uint32_t error) {
 	}
 
 	pd = (uint32_t*)0xFFFFF000;
-	pdi = (vaddr >> 22);
+	pdi = ((vaddr >> 22) & 0x000003FF);
 	pde = pd[pdi];
 	if ((pde & 1) == 0) {
 		pde = (((uint32_t)kpage_alloc()) | 0x003);
 		pd[pdi] = pde;
 	}
 
-	pt = (uint32_t*)(0xFFC00000 + (pdi << 12));
+	pt = (uint32_t*)(0xFFC00000 | (pdi << 12));
 	pti = ((vaddr >> 12) & 0x000003FF);
 	pt[pti] = (((uint32_t)kpage_alloc()) | 0x003);
 

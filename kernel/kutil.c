@@ -223,7 +223,7 @@ static void print_x64(kout_t out, uint64_t u64, unsigned width) {
 	for (; shift >= 0; mask >>= 4, shift -= 4) {
 		place = ((u64 & mask) >> shift);
 		if (started == 0) {
-			if (place || ((width * 4) >= (unsigned)shift))
+			if (place || ((width * 4) > (unsigned)shift))
 				started = 1;
 		}
 		if (started) out(_charset_hex[place]);
