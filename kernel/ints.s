@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * kernel/int_stub.s
+ * kernel/ints.s
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
