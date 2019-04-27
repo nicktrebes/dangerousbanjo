@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * kernel/irq_stub.s
+ * kernel/int_stub.s
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,6 +30,7 @@ idtr:
 
 .section .text
 
+.extern int14_handler
 .extern irq0_handler
 .extern irq1_handler
 .extern irq2_handler
@@ -46,6 +47,12 @@ idtr:
 .extern irq13_handler
 .extern irq14_handler
 .extern irq15_handler
+
+.global int14
+.type int14, @function
+int14:
+	call int14_handler
+	iret
 
 .global irq0
 .type irq0, @function

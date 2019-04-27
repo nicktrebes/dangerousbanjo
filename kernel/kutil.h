@@ -28,6 +28,7 @@
 
 #include <stdarg.h>
 
+int kcmp(const void* p0, const void* p1, size_t len);
 void* kcopy(void* dst, const void* src, size_t len);
 size_t klen(const char* str);
 void klogf(const char* fmt, ...);

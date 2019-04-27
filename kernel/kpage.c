@@ -33,7 +33,7 @@ extern uint32_t _kernel_end;
 
 static uint8_t _kpage_map[KPAGE_MAPSIZE];
 static kpage_t _kpage_pre[KPAGE_PREALLOC];
-static uint32_t _kpage_pcount, _kpage_start;
+static uint32_t _kpage_pcount, _kpage_ptr, _kpage_start;
 
 static kpage_t _alloc_page();
 static void _free_page(kpage_t page);
@@ -43,6 +43,7 @@ void kinit_page() {
 	uint32_t n;
 
 	_kpage_pcount = 0;
+	_kpage_ptr = 0;
 	_kpage_start = ((end % KPAGE_SIZE) ?
 		((end - (end % KPAGE_SIZE)) + KPAGE_SIZE) : end);
 
@@ -55,12 +56,8 @@ void kinit_page() {
 kpage_t kpage_alloc() {
 	if (_kpage_pcount == 0) {
 		uint32_t n;
-		for (n = 0; n < KPAGE_PREALLOC; ++n) {
-			if ((_kpage_pre[n] = _alloc_page()) == 0) {
-				kpanic("OUT OF MEMORY");
-				return 0;
-			}
-		}
+		for (n = 0; n < KPAGE_PREALLOC; ++n)
+			_kpage_pre[n] = _alloc_page();
 		_kpage_pcount = KPAGE_PREALLOC;
 	}
 	return _kpage_pre[--_kpage_pcount];
@@ -73,17 +70,24 @@ void kpage_free(kpage_t page) {
 }
 
 static kpage_t _alloc_page() {
-	uint32_t n;
-	for (n = 0; n < KPAGE_MAPSIZE; ++n) {
-		uint8_t frame, taken = 0x80;
-		for (frame = 0; frame < 8; ++frame) {
-			if ((_kpage_map[n] & taken) == 0) {
-				_kpage_map[n] |= taken;
-				return (kpage_t)(_kpage_start + (KPAGE_SIZE * ((n * 8) + frame)));
+	uint32_t n = _kpage_ptr;
+	do {
+		uint8_t entry = _kpage_map[n];
+		if ((entry & 0x0FF) == 0) {
+			uint8_t frame, taken = 0x80;
+			for (frame = 0; frame < 8; ++frame) {
+				if ((entry & taken) == 0) {
+					_kpage_map[n] = (entry | taken);
+					_kpage_ptr = n;
+					return (kpage_t)(_kpage_start + (KPAGE_SIZE * ((n * 8) + frame)));
+				}
+				taken >>= 1;
 			}
-			taken >>= 1;
 		}
-	}
+		n = ((n + 1) % KPAGE_MAPSIZE);
+	} while (n != _kpage_ptr);
+
+	kpanic("OUT OF MEMORY");
 	return 0;
 }
 

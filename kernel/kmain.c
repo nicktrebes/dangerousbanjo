@@ -69,5 +69,8 @@ void kmain() {
 	kinit_idt();
 	kprintf("%s","done.\n");
 
+	n = 0x77FACADE;
+	*((uint32_t*)n) = 0xDEADBEEF;
+
 	kprintf("%s","\nGoodbye!\n");
 }

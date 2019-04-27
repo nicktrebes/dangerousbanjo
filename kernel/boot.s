@@ -113,6 +113,8 @@ _start:
 	movl $(boot_pt0 - HHBASE + 0x003), boot_pd - HHBASE + 0
 	# Higher-half map
 	movl $(boot_pt0 - HHBASE + 0x003), boot_pd - HHBASE + 768 * 4
+	# Recursive entry
+	movl $(boot_pd - HHBASE + 0x003), boot_pd - HHBASE + 1023 * 4
 
 	# Set cr3 to the address of the page directory
 	movl $(boot_pd - HHBASE), %ecx

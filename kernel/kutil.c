@@ -42,11 +42,28 @@ static void print_d64(kout_t out, int64_t d64, unsigned width);
 static void print_u64(kout_t out, uint64_t u64, unsigned width);
 static void print_x64(kout_t out, uint64_t u64, unsigned width);
 
+int kcmp(const void* p0, const void* p1, size_t len) {
+	size_t len32 = (len / sizeof(uint32_t)), n;
+	for (n = 0; n < len32; ++n) {
+		uint32_t u0 = ((const uint32_t*)p0)[n];
+		uint32_t u1 = ((const uint32_t*)p1)[n];
+		if (u0 < u1) return (-1);
+		else if (u0 > u1) return 1;
+	}
+	for (n = (len - (len % sizeof(uint32_t))); n < len; ++n) {
+		uint8_t u0 = ((const uint8_t*)p0)[n];
+		uint8_t u1 = ((const uint8_t*)p1)[n];
+		if (u0 < u1) return (-1);
+		else if (u0 > u1) return 1;
+	}
+	return 0;
+}
+
 void* kcopy(void* dst, const void* src, size_t len) {
-	size_t len32 = (len / 4), n;
+	size_t len32 = (len / sizeof(uint32_t)), n;
 	for (n = 0; n < len32; ++n)
 		((uint32_t*)dst)[n] = ((uint32_t*)src)[n];
-	for (n = (len - (len % 4)); n < len; ++n)
+	for (n = (len - (len % sizeof(uint32_t))); n < len; ++n)
 		((uint8_t*)dst)[n] = ((uint8_t*)src)[n];
 	return dst;
 }

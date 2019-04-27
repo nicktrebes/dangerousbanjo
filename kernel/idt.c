@@ -27,6 +27,7 @@
 #include "idt.h"
 #include "kio.h"
 
+extern int int14();
 extern int irq0();
 extern int irq1();
 extern int irq2();
@@ -43,7 +44,7 @@ extern int irq12();
 extern int irq13();
 extern int irq14();
 extern int irq15();
-extern int load_idt();
+extern void load_idt();
 
 typedef struct {
 	uint16_t offset_low;
@@ -70,6 +71,7 @@ void kinit_idt(void) {
 	outb(0x21,0x0);
 	outb(0xA1,0x0);
 
+	_load_irq(14,(uint32_t)int14);
 	_load_irq(32,(uint32_t)irq0);
 	_load_irq(33,(uint32_t)irq1);
 	_load_irq(34,(uint32_t)irq2);
