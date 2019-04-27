@@ -26,27 +26,22 @@
 #include "kpage.h"
 #include "kutil.h"
 
-#define KPAGE_MAPSIZE  (131040)
+#define KPAGE_MAPSIZE  (0xB0000000 / (KPAGE_SIZE * 32))
 #define KPAGE_PREALLOC (16)
+#define KPAGE_START    (0x10000000)
 
-extern uint32_t _kernel_end;
+static uint32_t _kpage_map[KPAGE_MAPSIZE];
+static uint32_t _kpage_pre[KPAGE_PREALLOC];
+static uint32_t _kpage_pcount, _kpage_ptr;
 
-static uint8_t _kpage_map[KPAGE_MAPSIZE];
-static kpage_t _kpage_pre[KPAGE_PREALLOC];
-static uint32_t _kpage_pcount, _kpage_ptr, _kpage_start;
-
-static kpage_t _alloc_page();
-static void _free_page(kpage_t page);
+static uint32_t _alloc_page();
+static void _free_page(uint32_t page);
 
 void kinit_page() {
-	uint32_t end = _kernel_end, n;
+	uint32_t n;
 
 	_kpage_pcount = 0;
 	_kpage_ptr = 0;
-	_kpage_start = ((end % KPAGE_SIZE) ?
-		((end - (end % KPAGE_SIZE)) + KPAGE_SIZE) : end);
-	klogf("_kernel_end=0x%08x\n",_kernel_end);
-	klogf("_kpage_start=0x%08x\n",_kpage_start);
 
 	for (n = 0; n < KPAGE_MAPSIZE; ++n)
 		_kpage_map[n] = 0;
@@ -54,8 +49,8 @@ void kinit_page() {
 		_kpage_pre[n] = 0;
 }
 
-kpage_t kpage_alloc() {
-	kpage_t page;
+uint32_t kpage_alloc() {
+	uint32_t page;
 	if (_kpage_pcount == 0) {
 		uint32_t n;
 		for (n = 0; n < KPAGE_PREALLOC; ++n)
@@ -63,27 +58,27 @@ kpage_t kpage_alloc() {
 		_kpage_pcount = KPAGE_PREALLOC;
 	}
 	page = _kpage_pre[--_kpage_pcount];
-	klogf("Allocated page at 0x%08x\n",(uint32_t)page);
+	klogf("Allocated page at 0x%x\n",(uint32_t)page);
 	return page;
 }
 
-void kpage_free(kpage_t page) {
+void kpage_free(uint32_t page) {
 	if (_kpage_pcount < KPAGE_PREALLOC)
 		_kpage_pre[_kpage_pcount++] = page;
 	else _free_page(page);
 }
 
-static kpage_t _alloc_page() {
+static uint32_t _alloc_page() {
 	uint32_t n = _kpage_ptr;
 	do {
-		uint8_t entry = _kpage_map[n];
-		if ((entry & 0x0FF) == 0) {
-			uint8_t frame, taken = 0x80;
-			for (frame = 0; frame < 8; ++frame) {
+		uint32_t entry = _kpage_map[n];
+		if (entry ^ 0xFFFFFFFF) {
+			uint32_t page, taken = 0x80000000;
+			for (page = 0; page < 32; ++page) {
 				if ((entry & taken) == 0) {
 					_kpage_map[n] = (entry | taken);
 					_kpage_ptr = n;
-					return (kpage_t)(_kpage_start + (KPAGE_SIZE * ((n * 8) + frame)));
+					return (KPAGE_START + (KPAGE_SIZE * ((n * 32) + page)));
 				}
 				taken >>= 1;
 			}
@@ -95,10 +90,10 @@ static kpage_t _alloc_page() {
 	return 0;
 }
 
-static void _free_page(kpage_t page) {
-	uint32_t rel = (((uint32_t)page) - _kpage_start);
-	uint32_t idx = (rel / KPAGE_SIZE);
-	uint8_t bit = (0x80 >> (rel % 8));
+static void _free_page(uint32_t page) {
+	uint32_t rel = ((page - KPAGE_START) / KPAGE_SIZE);
+	uint32_t idx = (rel / 32);
+	uint32_t bit = (0x80000000 >> (rel % 32));
 	if (idx >= KPAGE_MAPSIZE)
 		kpanic("ATTEMPT TO FREE INVALID PAGE");
 	_kpage_map[idx] &= (~bit);

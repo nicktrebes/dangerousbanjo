@@ -30,10 +30,8 @@
 
 #define KPAGE_SIZE (4096)
 
-typedef uint32_t kpage_t;
-
 void kinit_page();
-kpage_t kpage_alloc();
-void kpage_free(kpage_t page);
+uint32_t kpage_alloc();
+void kpage_free(uint32_t page);
 
 #endif
