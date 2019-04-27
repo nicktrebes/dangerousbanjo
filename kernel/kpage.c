@@ -39,13 +39,14 @@ static kpage_t _alloc_page();
 static void _free_page(kpage_t page);
 
 void kinit_page() {
-	uint32_t end = (_kernel_end - 0xC0000000);
-	uint32_t n;
+	uint32_t end = _kernel_end, n;
 
 	_kpage_pcount = 0;
 	_kpage_ptr = 0;
 	_kpage_start = ((end % KPAGE_SIZE) ?
 		((end - (end % KPAGE_SIZE)) + KPAGE_SIZE) : end);
+	klogf("_kernel_end=0x%08x\n",_kernel_end);
+	klogf("_kpage_start=0x%08x\n",_kpage_start);
 
 	for (n = 0; n < KPAGE_MAPSIZE; ++n)
 		_kpage_map[n] = 0;
@@ -54,13 +55,16 @@ void kinit_page() {
 }
 
 kpage_t kpage_alloc() {
+	kpage_t page;
 	if (_kpage_pcount == 0) {
 		uint32_t n;
 		for (n = 0; n < KPAGE_PREALLOC; ++n)
 			_kpage_pre[n] = _alloc_page();
 		_kpage_pcount = KPAGE_PREALLOC;
 	}
-	return _kpage_pre[--_kpage_pcount];
+	page = _kpage_pre[--_kpage_pcount];
+	klogf("Allocated page at 0x%08x\n",(uint32_t)page);
+	return page;
 }
 
 void kpage_free(kpage_t page) {

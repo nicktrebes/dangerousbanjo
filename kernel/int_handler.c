@@ -52,12 +52,6 @@ void CDECL int14_handler(uint32_t error) {
 	} else if (error & PAGE_USER) {
 		// TODO
 		kpanic("PRIVILEGE VIOLATION");
-	} else if (error & PAGE_RSRV) {
-		// TODO
-		kpanic("RESERVED WRITE");
-	} else if (error & PAGE_FETCH) {
-		// TODO
-		kpanic("INSTRUCTION FETCH");
 	}
 
 	pd = (uint32_t*)0xFFFFF000;
@@ -68,7 +62,7 @@ void CDECL int14_handler(uint32_t error) {
 		pd[pdi] = pde;
 	}
 
-	pt = (uint32_t*)(0xFFC00000 + pdi);
+	pt = (uint32_t*)(0xFFC00000 + (pdi << 12));
 	pti = ((vaddr >> 12) & 0x000003FF);
 	pt[pti] = (((uint32_t)kpage_alloc()) | 0x003);
 
