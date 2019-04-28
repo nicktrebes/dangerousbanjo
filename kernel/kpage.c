@@ -57,9 +57,7 @@ uint32_t kpage_alloc() {
 			_kpage_pre[n] = _alloc_page();
 		_kpage_pcount = KPAGE_PREALLOC;
 	}
-	page = _kpage_pre[--_kpage_pcount];
-	klogf("Allocated page at 0x%x\n",(uint32_t)page);
-	return page;
+	return _kpage_pre[--_kpage_pcount];
 }
 
 void kpage_free(uint32_t page) {

@@ -52,6 +52,7 @@ idtr:
 .type int14, @function
 int14:
 	call int14_handler
+	pop %eax
 	iret
 
 .global irq0
