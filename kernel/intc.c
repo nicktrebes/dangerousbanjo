@@ -75,6 +75,7 @@ void CDECL int14_handler(uint32_t error) {
 	pt[pti] = (((uint32_t)kpage_alloc()) | 0x003);
 
 	_flush_tlb();
+	outb(0xA0,0x20);
 	outb(0x20,0x20);
 }
 

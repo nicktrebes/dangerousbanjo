@@ -51,7 +51,12 @@ idtr:
 .global int14
 .type int14, @function
 int14:
+	pusha
+	movl 32(%esp), %eax
+	push %eax
 	call int14_handler
+	pop %eax
+	popa
 	addl $4, %esp
 	iret
 

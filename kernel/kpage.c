@@ -50,7 +50,6 @@ void kinit_page() {
 }
 
 uint32_t kpage_alloc() {
-	uint32_t page;
 	if (_kpage_pcount == 0) {
 		uint32_t n;
 		for (n = 0; n < KPAGE_PREALLOC; ++n)
