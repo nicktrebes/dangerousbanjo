@@ -33,7 +33,7 @@
 #include "vga.h"
 
 #define KVERSION_MAJOR (0)
-#define KVERSION_MINOR (3)
+#define KVERSION_MINOR (4)
 
 //extern multiboot_info_t* kmultiboot_info;
 extern uint32_t kmultiboot_magic;
