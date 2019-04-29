@@ -11,7 +11,7 @@ $(KERNEL).iso: .build/boot/grub/grub.cfg verify
 all: $(KERNEL).iso
 
 clean:
-	rm -rf .build $(KERNEL).iso kernel.log
+	rm -rf .build $(KERNEL).iso *.log
 	make -C kernel clean
 
 objdump: .build/boot/$(KERNEL).bin

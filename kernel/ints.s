@@ -58,7 +58,7 @@ int14:
 	pop %eax
 	popa
 	addl $4, %esp
-	iret
+	ret
 
 .global irq0
 .type irq0, @function

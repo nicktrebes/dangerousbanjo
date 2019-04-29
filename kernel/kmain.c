@@ -71,6 +71,8 @@ void kmain() {
 
 	n = 0x77FACADE;
 	*((uint32_t*)n) = 0xDEADBEEF;
+	kprintf("0x%08x: 0x%08x\n",n,*(uint32_t*)n);
 
 	kprintf("%s","\nGoodbye!\n");
+	khalt();
 }

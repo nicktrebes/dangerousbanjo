@@ -33,8 +33,6 @@
 typedef void (*kout_t)(char);
 typedef void (*kouts_t)(const char* str);
 
-extern void khalt(void);
-
 static void out_log(char c);
 static void out_logstr(const char* str);
 static size_t print_arg(kout_t out, kouts_t outs, const char* fmt, size_t ptr, va_list* argptr);
