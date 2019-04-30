@@ -27,81 +27,73 @@
 #include "kutil.h"
 
 static uint32_t _kalloc_map[KALLOC_MAPSIZE];
+static uint32_t _kalloc_maxblock;
 
-static void* _alloc_mem(uint32_t pages, uint32_t start, uint32_t half, uint32_t end);
-static void _free_mem(uint32_t addr, uint32_t start, uint32_t half, uint32_t end);
-static int _static_realloc(uint32_t addr, uint32_t pages, uint32_t start, uint32_t half, uint32_t end, uint32_t* old);
+static void* _kalloc(uint32_t idx, uint32_t size, uint32_t req);
 
 void* kalloc(uint32_t pages) {
-	void* ptr = _alloc_mem(pages,0,(KALLOC_MAPSIZE / 2),KALLOC_MAPSIZE);
-	if (ptr == NULL) kpanic("INSUFFICIENT KERNEL MEMORY");
-	return ptr;
+	uint32_t n;
+	for (n = 0; n < KALLOC_MAPSIZE; n += _kalloc_maxblock) {
+		void* ptr = _kalloc(n,_kalloc_maxblock,pages);
+		if (ptr != NULL) return ptr;
+	}
+
+	kpanic("INSUFFICIENT KERNEL MEMORY");
+	return NULL;
 }
 
 void kinit_alloc() {
 	uint32_t n;
+
+	_kalloc_maxblock = 1;
+	while ((KALLOC_MAPSIZE & _kalloc_maxblock) == 0)
+		_kalloc_maxblock <<= 1;
+
 	for (n = 0; n < KALLOC_MAPSIZE; ++n)
-		_kalloc_map[n] = 0;
+		_kalloc_map[n] = ((n % _kalloc_maxblock) ? 0 : _kalloc_maxblock);
 }
 
 void kfree(void* ptr) {
-	_free_mem((uint32_t)ptr,0,(KALLOC_MAPSIZE / 2),KALLOC_MAPSIZE);
+	// TODO
 }
 
 void* krealloc(void* src, uint32_t pages) {
-	void* dst;
-	uint32_t n, old = 0, small;
-
-	if (_static_realloc((uint32_t)src,pages,0,(KALLOC_MAPSIZE / 2),KALLOC_MAPSIZE,&old)) {
-		return src;
-	} else if (old) {
-		dst = kalloc(pages);
-		small = ((old < pages) ? old : pages);
-
-		for (n = 0; n < small; ++n) {
-			// TODO: remap existing physical pages
-		}
-
-		if (small < old) {
-			// TODO: free extra existing physical pages
-		}
-	}
-
+	// TODO
 	return NULL;
 }
 
-static void* _alloc_mem(uint32_t pages, uint32_t start, uint32_t half, uint32_t end) {
+static void* _kalloc(uint32_t idx, uint32_t size, uint32_t req) {
 	void* ptr;
-	uint32_t window = (end - start);
+	uint32_t entry, taken;
 
-	// Ensure this tree entry can fit requested allocation
-	if (pages > window) return NULL;
+	// Ensure this branch is sufficient
+	if (size < req) return NULL;
 
-	// Only probe deeper if not leaf case
-	if (window > 1) {
-		// 1. Find deepest binary tree entry possible
-		// 2. Bias smaller allocations toward end of tree
-		ptr = _alloc_mem(pages,half,(half + (half / 2)),end);
-		if (ptr != NULL) return ptr;
-		ptr = _alloc_mem(pages,0,(half / 2),half);
-		if (ptr != NULL) return ptr;
+	// Get branch info
+	entry = _kalloc_map[idx];
+	taken = (entry & 0x80000000);
+	entry = (entry & 0x7FFFFFFF);
+
+	// Full-size entry case
+	if (entry == size) {
+		// Entry is taken
+		if (taken) return NULL;
+
+		// Request uses entire entry
+		if ((entry >> 1) < req) {
+			_kalloc_map[idx] = (0x80000000 | entry);
+			return (void*)(KALLOC_START + (idx * KPAGE_SIZE));
+		}
+
+		// Split entry
+		entry >>= 1;
+		_kalloc_map[idx] = entry;
+		_kalloc_map[idx + entry] = entry;
 	}
 
-	// If available, take entry
-	if (_kalloc_map[start] == 0) {
-		_kalloc_map[start] = pages;
-		return (void*)(KALLOC_START + (start * KPAGE_SIZE));
-	}
-
-	// No entry available in this branch
-	return NULL;
-}
-
-static void _free_mem(uint32_t addr, uint32_t start, uint32_t half, uint32_t end) {
-	// TODO
-}
-
-static int _static_realloc(uint32_t addr, uint32_t pages, uint32_t start, uint32_t half, uint32_t end, uint32_t* old) {
-	// TODO
-	return 0;
+	// Try buddy entries
+	size >>= 1;
+	ptr = _kalloc(idx,size,req);
+	if (ptr != NULL) return ptr;
+	return _kalloc((idx + size),size,req);
 }
