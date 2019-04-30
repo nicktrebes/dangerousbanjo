@@ -58,6 +58,7 @@ uint32_t kpage_alloc() {
 }
 
 void kpage_free(uint32_t page) {
+	page &= 0xFFFFF000;
 	if (_kpage_pcount < KPAGE_PREALLOC)
 		_kpage_pre[_kpage_pcount++] = page;
 	else _free_page(page);
@@ -96,6 +97,29 @@ uint32_t kpage_resolve(uint32_t vaddr) {
 	pt = (uint32_t*)(KVADDR_PAGE_TAB | (pdi << 12));
 	pti = ((vaddr >> 12) & 0x000003FF);
 	return (pt[pti] & 0xFFFFFC00);
+}
+
+void kpage_umap(uint32_t vaddr, int free) {
+	uint32_t *pd, *pt;
+	uint32_t pde, pdi, pte, pti;
+
+	pd = (uint32_t*)KVADDR_PAGE_DIR;
+	pdi = ((vaddr >> 22) & 0x000003FF);
+	pde = pd[pdi];
+
+	if (pde & 1) {
+		pt = (uint32_t*)(KVADDR_PAGE_TAB | (pdi << 12));
+		pti = ((vaddr >> 12) & 0x000003FF);
+
+		if (free) {
+			pte = pt[pti];
+			if (pte & 1) kpage_free(pte);
+		}
+
+		pt[pti] = 0;
+	}
+
+	_flush_tlb();
 }
 
 static uint32_t _alloc_page() {
