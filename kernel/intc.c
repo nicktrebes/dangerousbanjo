@@ -35,14 +35,10 @@
 #define PAGE_RSRV  (1<<1)
 #define PAGE_FETCH (1<<0)
 
-static inline void _flush_tlb(void);
 static inline uint32_t _get_cr2(void);
 
 void CDECL int14_handler(uint32_t error) {
-	uint32_t *pd, *pt;
-	uint32_t pde, pdi, pti, vaddr;
-
-	vaddr = _get_cr2();
+	uint32_t vaddr = _get_cr2();
 	klogf("%s operation on virtual address 0x%08x\n",
 		((error & PAGE_WRITE) ? "Read" : "Write"),vaddr);
 
@@ -54,29 +50,7 @@ void CDECL int14_handler(uint32_t error) {
 		kpanic("PRIVILEGE VIOLATION");
 	}
 
-	pd = (uint32_t*)0xFFFFF000;
-	pdi = ((vaddr >> 22) & 0x000003FF);
-	klogf("PDI: 0x%08x\n",pdi);
-	pde = pd[pdi];
-	klogf("PDE: 0x%08x\n",pde);
-	pt = (uint32_t*)(0xFFC00000 | (pdi << 12));
-	klogf("PT:  0x%08x\n",(uint32_t)pt);
-
-	if ((pde & 1) == 0) {
-		uint32_t n;
-		pde = (((uint32_t)kpage_alloc()) | 0x003);
-		klogf("PDE: 0x%08x\n",pde);
-		pd[pdi] = pde;
-		for (n = 0; n < 1024; ++n) pt[n] = 0;
-	}
-
-	pti = ((vaddr >> 12) & 0x000003FF);
-	klogf("PTI: 0x%08x\n",pti);
-	pt[pti] = (((uint32_t)kpage_alloc()) | 0x003);
-
-	_flush_tlb();
-	outb(0xA0,0x20);
-	outb(0x20,0x20);
+	kpage_map(vaddr,kpage_alloc(),0x003);
 }
 
 void irq0_handler(void) {
@@ -165,11 +139,6 @@ void irq15_handler(void) {
 	// TODO
 	outb(0xA0,0x20);
 	outb(0x20,0x20);
-}
-
-static inline void _flush_tlb(void) {
-	asm volatile ( "movl %%cr3, %%eax" : : );
-	asm volatile ( "movl %%eax, %%cr3" : : );
 }
 
 static inline uint32_t _get_cr2(void) {

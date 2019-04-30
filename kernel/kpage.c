@@ -25,16 +25,14 @@
 
 #include "kpage.h"
 #include "kutil.h"
-
-#define KPAGE_MAPSIZE  (0xB0000000 / (KPAGE_SIZE * 32))
-#define KPAGE_PREALLOC (16)
-#define KPAGE_START    (0x10000000)
+#include "kvaddr.h"
 
 static uint32_t _kpage_map[KPAGE_MAPSIZE];
 static uint32_t _kpage_pre[KPAGE_PREALLOC];
 static uint32_t _kpage_pcount, _kpage_ptr;
 
 static uint32_t _alloc_page();
+static inline void _flush_tlb(void);
 static void _free_page(uint32_t page);
 
 void kinit_page() {
@@ -65,6 +63,41 @@ void kpage_free(uint32_t page) {
 	else _free_page(page);
 }
 
+void kpage_map(uint32_t vaddr, uint32_t paddr, uint16_t flags) {
+	uint32_t *pd, *pt;
+	uint32_t pde, pdi, pti;
+
+	pd = (uint32_t*)KVADDR_PAGE_DIR;
+	pdi = ((vaddr >> 22) & 0x000003FF);
+	pde = pd[pdi];
+	pt = (uint32_t*)(KVADDR_PAGE_TAB | (pdi << 12));
+
+	if ((pde & 1) == 0) {
+		uint32_t n;
+		pd[pdi] = (kpage_alloc() | 0x003);
+		for (n = 0; n < 1024; ++n) pt[n] = 0;
+	}
+
+	pti = ((vaddr >> 12) & 0x000003FF);
+	pt[pti] = (paddr | (flags & 0x03FF));
+
+	_flush_tlb();
+}
+
+uint32_t kpage_resolve(uint32_t vaddr) {
+	uint32_t *pd, *pt;
+	uint32_t pde, pdi, pti;
+
+	pd = (uint32_t*)KVADDR_PAGE_DIR;
+	pdi = ((vaddr >> 22) & 0x000003FF);
+	pde = pd[pdi];
+	if ((pde & 1) == 0) return 0;
+
+	pt = (uint32_t*)(KVADDR_PAGE_TAB | (pdi << 12));
+	pti = ((vaddr >> 12) & 0x000003FF);
+	return (pt[pti] & 0xFFFFFC00);
+}
+
 static uint32_t _alloc_page() {
 	uint32_t n = _kpage_ptr;
 	do {
@@ -83,8 +116,13 @@ static uint32_t _alloc_page() {
 		n = ((n + 1) % KPAGE_MAPSIZE);
 	} while (n != _kpage_ptr);
 
-	kpanic("OUT OF MEMORY");
+	kpanic("OUT OF PAGES");
 	return 0;
+}
+
+static inline void _flush_tlb(void) {
+	asm volatile ( "movl %%cr3, %%eax" : : );
+	asm volatile ( "movl %%eax, %%cr3" : : );
 }
 
 static void _free_page(uint32_t page) {

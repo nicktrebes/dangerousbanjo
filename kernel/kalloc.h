@@ -1,7 +1,10 @@
+#ifndef __KALLOC_H__
+#define __KALLOC_H__
+
 /*
  * MIT License
  *
- * kernel/kmain.c
+ * kernel/kalloc.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,27 +26,16 @@
  * SOFTWARE.
  */
 
-#include "kutil.h"
-#include "multiboot.h"
-#include "vga.h"
+#include <stddef.h>
+#include <stdint.h>
+#include "kpage.h"
 
-#define KVERSION_MAJOR (0)
-#define KVERSION_MINOR (4)
+#define KALLOC_START   (0xC0000000 + KPAGE_START)
+#define KALLOC_MAPSIZE ((KALLOC_START ^ 0xF0000000) / KPAGE_SIZE)
 
-//extern multiboot_info_t* kmultiboot_info;
-extern uint32_t kmultiboot_magic;
+void* kalloc(uint32_t pages);
+void kinit_alloc();
+void kfree(void* ptr);
+void* krealloc(void* ptr, uint32_t pages);
 
-extern void kinit();
-
-void kmain() {
-	vga_init();
-	kprintf("%s %u.%u\n","DANGEROUSBANJO",KVERSION_MAJOR,KVERSION_MINOR);
-
-	if (kmultiboot_magic != MULTIBOOT_BOOTLOADER_MAGIC)
-		kpanic("INVALID MULTIBOOT INFO");
-
-	kinit();
-
-	kprintf("%s","\nGoodbye!\n");
-	khalt();
-}
+#endif

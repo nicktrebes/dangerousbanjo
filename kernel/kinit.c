@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * kernel/kmain.c
+ * kernel/kinit.c
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,27 +23,40 @@
  * SOFTWARE.
  */
 
+#include "gdt.h"
+#include "idt.h"
+#include "kalloc.h"
+#include "kio.h"
+#include "kpage.h"
 #include "kutil.h"
-#include "multiboot.h"
-#include "vga.h"
+#include "kvaddr.h"
 
-#define KVERSION_MAJOR (0)
-#define KVERSION_MINOR (4)
+void kinit() {
+	const uint16_t* bda = (const uint16_t*)KVADDR_BIOS_DATA;
+	uint32_t n;
 
-//extern multiboot_info_t* kmultiboot_info;
-extern uint32_t kmultiboot_magic;
+	kprintf("%s","\nInitializing serial ports:\n");
+	for (n = 1; n <= 4; ++n) {
+		uint16_t port = bda[n - 1];
+		if (port) {
+			kprintf("%s%u=0x%x\n"," * COM",n,(uint32_t)port);
+			serial_init(port);
+		}
+	}
 
-extern void kinit();
+	kprintf("%s","Initializing segments...");
+	kinit_gdt();
+	kprintf("%s","done.\n");
 
-void kmain() {
-	vga_init();
-	kprintf("%s %u.%u\n","DANGEROUSBANJO",KVERSION_MAJOR,KVERSION_MINOR);
+	kprintf("%s","Initializing page allocator...");
+	kinit_page();
+	kprintf("%s","done.\n");
 
-	if (kmultiboot_magic != MULTIBOOT_BOOTLOADER_MAGIC)
-		kpanic("INVALID MULTIBOOT INFO");
+	kprintf("%s","Initializing interrupts...");
+	kinit_idt();
+	kprintf("%s","done.\n");
 
-	kinit();
-
-	kprintf("%s","\nGoodbye!\n");
-	khalt();
+	kprintf("%s","Initializing memory allocator...");
+	//kinit_alloc();
+	kprintf("%s","done.\n");
 }

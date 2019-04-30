@@ -4,7 +4,7 @@
 /*
  * MIT License
  *
- * kernel/kmain.c
+ * kernel/kvaddr.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,5 +29,7 @@
 #define KVADDR_HHBASE    (0xC0000000)
 #define KVADDR_BIOS_DATA (0xC0000400)
 #define KVADDR_VGA_BUF   (0xC00B8000)
+#define KVADDR_PAGE_TAB  (0xFFC00000)
+#define KVADDR_PAGE_DIR  (0xFFFFF000)
 
 #endif

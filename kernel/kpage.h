@@ -28,10 +28,15 @@
 
 #include <stdint.h>
 
-#define KPAGE_SIZE (4096)
+#define KPAGE_SIZE     (4096)
+#define KPAGE_START    (0x10000000 /* & 0xF0000000 */)
+#define KPAGE_MAPSIZE  ((0xFFFE0000 - KPAGE_START) / (KPAGE_SIZE * 32))
+#define KPAGE_PREALLOC (16)
 
 void kinit_page();
 uint32_t kpage_alloc();
 void kpage_free(uint32_t page);
+void kpage_map(uint32_t vaddr, uint32_t paddr, uint16_t flags);
+uint32_t kpage_resolve(uint32_t vaddr);
 
 #endif
