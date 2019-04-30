@@ -30,6 +30,8 @@ static uint32_t _kalloc_map[KALLOC_MAPSIZE];
 static uint32_t _kalloc_maxblock;
 
 static void* _kalloc(uint32_t idx, uint32_t size, uint32_t req);
+static void _kfree(uint32_t idx, uint32_t size);
+static int _krealloc(uint32_t idx, uint32_t req, uint32_t* old);
 
 void* kalloc(uint32_t pages) {
 	uint32_t n;
@@ -54,12 +56,40 @@ void kinit_alloc() {
 }
 
 void kfree(void* ptr) {
-	// TODO
+	uint32_t idx = ((((uint32_t)ptr) - KALLOC_START) / KPAGE_SIZE);
+	uint32_t n, size = _kalloc_map[idx];
+	if (size) {
+		for (n = 0; n < size; ++n)
+			kpage_umap((((uint32_t)ptr) + (n * KPAGE_SIZE)),1);
+		_kfree(idx,_kalloc_maxblock);
+	}
 }
 
 void* krealloc(void* src, uint32_t pages) {
-	// TODO
-	return NULL;
+	void* dst;
+	uint32_t n, old = 0;
+	uint32_t idx = ((((uint32_t)src) - KALLOC_START) / KPAGE_SIZE);
+
+	if (pages == 0) {
+		kfree(src);
+		return NULL;
+	} else if (_krealloc(idx,pages,&old)) {
+		return src;
+	}
+
+	dst = kalloc(pages);
+	if (dst == NULL) return NULL;
+	for (n = 0; (n < old) && (n < pages); ++n) {
+		uint16_t flags = 0;
+		uint32_t paddr = kpage_resolve((((uint32_t)src) + (n * KPAGE_SIZE)),&flags);
+		kpage_map((((uint32_t)dst) + (n * KPAGE_SIZE)),paddr,flags);
+		kpage_umap((((uint32_t)src) + (n * KPAGE_SIZE)),0);
+	}
+	for (; n < old; ++n)
+		kpage_umap((((uint32_t)src) + (n * KPAGE_SIZE)),1);
+
+	_kfree(idx,_kalloc_maxblock);
+	return dst;
 }
 
 static void* _kalloc(uint32_t idx, uint32_t size, uint32_t req) {
@@ -96,4 +126,13 @@ static void* _kalloc(uint32_t idx, uint32_t size, uint32_t req) {
 	ptr = _kalloc(idx,size,req);
 	if (ptr != NULL) return ptr;
 	return _kalloc((idx + size),size,req);
+}
+
+static void _kfree(uint32_t idx, uint32_t size) {
+	// TODO
+}
+
+static int _krealloc(uint32_t idx, uint32_t req, uint32_t* old) {
+	// TODO: try static reallocation
+	return 0;
 }

@@ -37,7 +37,7 @@ void kinit_page();
 uint32_t kpage_alloc();
 void kpage_free(uint32_t page);
 void kpage_map(uint32_t vaddr, uint32_t paddr, uint16_t flags);
-uint32_t kpage_resolve(uint32_t vaddr);
+uint32_t kpage_resolve(uint32_t vaddr, uint16_t* flags);
 void kpage_umap(uint32_t vaddr, int free);
 
 #endif

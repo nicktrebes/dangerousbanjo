@@ -85,9 +85,9 @@ void kpage_map(uint32_t vaddr, uint32_t paddr, uint16_t flags) {
 	_flush_tlb();
 }
 
-uint32_t kpage_resolve(uint32_t vaddr) {
+uint32_t kpage_resolve(uint32_t vaddr, uint16_t* flags) {
 	uint32_t *pd, *pt;
-	uint32_t pde, pdi, pti;
+	uint32_t pde, pdi, pte, pti;
 
 	pd = (uint32_t*)KVADDR_PAGE_DIR;
 	pdi = ((vaddr >> 22) & 0x000003FF);
@@ -96,7 +96,12 @@ uint32_t kpage_resolve(uint32_t vaddr) {
 
 	pt = (uint32_t*)(KVADDR_PAGE_TAB | (pdi << 12));
 	pti = ((vaddr >> 12) & 0x000003FF);
-	return (pt[pti] & 0xFFFFFC00);
+	pte = pt[pti];
+
+	if (flags != NULL)
+		*flags = (uint16_t)(pte & 0x03FF);
+
+	return (pte & 0xFFFFFC00);
 }
 
 void kpage_umap(uint32_t vaddr, int free) {
