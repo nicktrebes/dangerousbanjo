@@ -29,8 +29,9 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "kpage.h"
+#include "kvaddr.h"
 
-#define KALLOC_START   (0xC0000000 + KPAGE_START)
+#define KALLOC_START   (KVADDR_HHBASE + KPAGE_START)
 #define KALLOC_MAPSIZE ((KALLOC_START ^ 0xF0000000) / KPAGE_SIZE)
 
 void* kalloc(uint32_t pages);
