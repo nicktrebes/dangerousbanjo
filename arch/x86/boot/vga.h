@@ -1,10 +1,10 @@
-#include <kernel/types.h>
-#ifdef __KERNEL_X86__
+#ifndef __X86_BOOT_VGA_H__
+#define __X86_BOOT_VGA_H__
 
 /*
  * MIT License
  *
- * arch/x86/boot/kmain.c
+ * arch/x86/boot/vga.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,26 +26,35 @@
  * SOFTWARE.
  */
 
-#include <kernel/info.h>
-#include <kernel/kutil.h>
-#include <multiboot.h>
-#include "vga.h"
+#include <kernel/types.h>
+#ifdef __KERNEL_X86__
 
-extern multiboot_info_t* kmultiboot_info __unused;
-extern u32 kmultiboot_magic;
+typedef enum {
+	VGA_COLOR_BLACK         = 0,
+	VGA_COLOR_BLUE          = 1,
+	VGA_COLOR_GREEN         = 2,
+	VGA_COLOR_CYAN          = 3,
+	VGA_COLOR_RED           = 4,
+	VGA_COLOR_MAGENTA       = 5,
+	VGA_COLOR_BROWN         = 6,
+	VGA_COLOR_LIGHT_GREY    = 7,
+	VGA_COLOR_DARK_GREY     = 8,
+	VGA_COLOR_LIGHT_BLUE    = 9,
+	VGA_COLOR_LIGHT_GREEN   = 10,
+	VGA_COLOR_LIGHT_CYAN    = 11,
+	VGA_COLOR_LIGHT_RED     = 12,
+	VGA_COLOR_LIGHT_MAGENTA = 13,
+	VGA_COLOR_LIGHT_BROWN   = 14,
+	VGA_COLOR_WHITE         = 15
+} vga_color_t;
 
-void kmain(void) {
-	vga_init();
+void vga_clear(void);
+void vga_color(vga_color_t fg, vga_color_t bg);
+void vga_cursor(u8 row, u8 col);
+void vga_init(void);
+void vga_putc(char c);
+void vga_puts(const char* str);
+void vga_scroll(u8 lines);
 
-	kprintf("%s %u.%u.%u\n",KERNEL_NAME,
-		KERNEL_VERSION_MAJOR,
-		KERNEL_VERSION_MINOR,
-		KERNEL_VERSION_PATCH);
-
-	if (kmultiboot_magic != MULTIBOOT_BOOTLOADER_MAGIC)
-		kpanic("INVALID MULTIBOOT");
-
-	khalt();
-}
-
-#endif /* ! __KERNEL_X86__ */
+#endif /* __KERNEL_X86__ */
+#endif /* ! __X86_BOOT_VGA_H__ */

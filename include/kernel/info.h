@@ -1,10 +1,10 @@
-#include <kernel/types.h>
-#ifdef __KERNEL_X86__
+#ifndef __KERNEL_INFO_H__
+#define __KERNEL_INFO_H__
 
 /*
  * MIT License
  *
- * arch/x86/boot/kmain.c
+ * include/kernel/info.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,26 +26,9 @@
  * SOFTWARE.
  */
 
-#include <kernel/info.h>
-#include <kernel/kutil.h>
-#include <multiboot.h>
-#include "vga.h"
+#define KERNEL_NAME          ("DANGEROUSBANJO")
+#define KERNEL_VERSION_MAJOR (0)
+#define KERNEL_VERSION_MINOR (0)
+#define KERNEL_VERSION_PATCH (0)
 
-extern multiboot_info_t* kmultiboot_info __unused;
-extern u32 kmultiboot_magic;
-
-void kmain(void) {
-	vga_init();
-
-	kprintf("%s %u.%u.%u\n",KERNEL_NAME,
-		KERNEL_VERSION_MAJOR,
-		KERNEL_VERSION_MINOR,
-		KERNEL_VERSION_PATCH);
-
-	if (kmultiboot_magic != MULTIBOOT_BOOTLOADER_MAGIC)
-		kpanic("INVALID MULTIBOOT");
-
-	khalt();
-}
-
-#endif /* ! __KERNEL_X86__ */
+#endif
