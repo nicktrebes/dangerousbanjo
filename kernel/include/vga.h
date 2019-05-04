@@ -1,10 +1,10 @@
-#ifndef __X86_BOOT_VGA_H__
-#define __X86_BOOT_VGA_H__
+#ifndef __KERNEL_VGA_H__
+#define __KERNEL_VGA_H__
 
 /*
  * MIT License
  *
- * arch/x86/boot/vga.h
+ * kernel/include/vga.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,7 +27,6 @@
  */
 
 #include <kernel/types.h>
-#ifdef __KERNEL_X86__
 
 typedef enum {
 	VGA_COLOR_BLACK         = 0,
@@ -56,5 +55,4 @@ void vga_putc(char c);
 void vga_puts(const char* str);
 void vga_scroll(u8 lines);
 
-#endif /* __KERNEL_X86__ */
 #endif /* ! __X86_BOOT_VGA_H__ */

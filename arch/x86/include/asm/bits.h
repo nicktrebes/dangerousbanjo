@@ -31,6 +31,8 @@
 #if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__)
 #define __KERNEL32__
 #define __KERNEL_X86__
+#elif defined(__x86_64__) && (!defined(__ILP32__))
+#define __KERNEL_X86__
 #endif
 
 #endif /* ! __KERNEL_X86__ */

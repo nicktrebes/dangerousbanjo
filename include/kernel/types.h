@@ -57,4 +57,12 @@ typedef __UINT16_TYPE__ u16;
 typedef __UINT32_TYPE__ u32;
 typedef __UINT64_TYPE__ u64;
 
+#ifdef __KERNEL32__
+typedef s32 sptr_t;
+typedef u32 uptr_t;
+#else /* __KERNEL32__ */
+typedef s64 sptr_t;
+typedef u64 uptr_t;
+#endif /* __KERNEL32__ */
+
 #endif /* ! __KERNEL_TYPES_H__ */

@@ -1,10 +1,10 @@
-#include <kernel/types.h>
-#ifdef __KERNEL_X86__
+#ifndef __KERNEL_KUTIL_H__
+#define __KERNEL_KUTIL_H__
 
 /*
  * MIT License
  *
- * arch/x86/boot/kmain.c
+ * kernel/include/kutil.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,26 +26,11 @@
  * SOFTWARE.
  */
 
-#include <kernel/info.h>
-#include <kutil.h>
-#include <multiboot.h>
-#include <vga.h>
+#include <kernel/types.h>
 
-extern multiboot_info_t* kmultiboot_info __unused;
-extern u32 kmultiboot_magic;
+void khalt(void) __noreturn;
+void klogf(const char* fmt, ...) __format(printf,1,2);
+void kpanic(const char* msg) __noreturn;
+void kprintf(const char* fmt, ...) __format(printf,1,2);
 
-void kmain(void) {
-	vga_init();
-
-	kprintf("%s %u.%u.%u\n",KERNEL_NAME,
-		KERNEL_VERSION_MAJOR,
-		KERNEL_VERSION_MINOR,
-		KERNEL_VERSION_PATCH);
-
-	if (kmultiboot_magic != MULTIBOOT_BOOTLOADER_MAGIC)
-		kpanic("INVALID MULTIBOOT");
-
-	khalt();
-}
-
-#endif /* ! __KERNEL_X86__ */
+#endif /* ! __KERNEL_KUTIL_H__ */
