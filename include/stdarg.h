@@ -26,9 +26,18 @@
  * SOFTWARE.
  */
 
-#include <stddef.h>
+#include <asm/bits.h>
 
-#define _STACK_OFFSET(type) ((sizeof(type) % 4) ? (((sizeof(type) / 4) + 1) * 4) : sizeof(type))
+#ifdef __KERNEL32__
+#define _STACK_ELEM (4)
+#else /* __KERNEL32__ */
+#define _STACK_ELEM (8)
+#endif /* __KERNEL32__ */
+
+#define NULL ((void*)0)
+
+#define _STACK_OFFSET(type) ((sizeof(type) % _STACK_ELEM) ? \
+	(((sizeof(type) / _STACK_ELEM) + 1) * _STACK_ELEM) : sizeof(type))
 
 #define va_arg(list,type) (*(type*)(((size_t)(list = (va_list)(((size_t)list) \
 	+ _STACK_OFFSET(type)))) \
@@ -40,4 +49,4 @@
 
 typedef void* va_list;
 
-#endif
+#endif /* ! __STDARG_H__ */

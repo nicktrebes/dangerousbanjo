@@ -1,10 +1,10 @@
-#ifndef __KATTR_H__
-#define __KATTR_H__
+#ifndef __KERNEL_KUTIL_H__
+#define __KERNEL_KUTIL_H__
 
 /*
  * MIT License
  *
- * kernel/kattr.h
+ * include/kernel/util.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,11 @@
  * SOFTWARE.
  */
 
-#define CDECL __attribute__((__cdecl__))
-#define PACKED __attribute__((packed))
+#include <kernel/types.h>
 
-#endif
+void khalt(void) __noreturn;
+void klogf(const char* fmt, ...) __format(printf,1,2);
+void kpanic(const char* msg) __noreturn;
+void kprintf(const char* fmt, ...) __format(printf,1,2);
+
+#endif /* ! __KERNEL_KUTIL_H__ */

@@ -1,7 +1,10 @@
+#include <kernel/types.h>
+#ifdef __KERNEL_X86__
+
 /*
  * MIT License
  *
- * kernel/gdtc.c
+ * arch/x86/boot/kmain.c
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,43 +26,14 @@
  * SOFTWARE.
  */
 
-#include "gdt.h"
-#include "kutil.h"
+#include <kernel/kutil.h>
+#include <multiboot.h>
 
-extern void load_gdt();
+extern multiboot_info_t* kmultiboot_info __unused;
+extern u32 kmultiboot_magic;
 
-static uint8_t _gdt_buf[32];
-
-static void _gdt_entry(uint8_t* entry, uint32_t base, uint32_t limit, uint8_t type);
-
-void kinit_gdt() {
-	_gdt_entry((&_gdt_buf[0]),0,0,0);
-	_gdt_entry((&_gdt_buf[8]),0,0xFFFFFFFF,0x9A);
-	_gdt_entry((&_gdt_buf[16]),0,0xFFFFFFFF,0x92);
-	_gdt_entry((&_gdt_buf[24]),(uint32_t)ktss,(uint32_t)sizeof(ktss),0x89);
-	load_gdt(_gdt_buf,sizeof(_gdt_buf));
+void kmain(void) {
+	if (kmultiboot_magic != MULTIBOOT_BOOTLOADER_MAGIC) khalt();
 }
 
-static void _gdt_entry(uint8_t* entry, uint32_t base, uint32_t limit, uint8_t type) {
-	// Check limit and adjust granularity if necessary
-	if (limit > 65536) {
-		if ((limit & 0x0FFF) != 0x0FFF)
-			kpanic("INVALID GDT ENTRY");
-		limit >>= 12;
-		entry[6] = 0xC0;
-	} else entry[6] = 0x40;
-
-	// Encode limit
-	entry[0] = (uint8_t)(limit & 0x0FF);
-	entry[1] = (uint8_t)((limit >> 8) & 0x0FF);
-	entry[6] |= (uint8_t)((limit >> 16) & 0x0F);
-
-	// Encode base
-	entry[2] = (uint8_t)(base & 0x0FF);
-	entry[3] = (uint8_t)((base >> 8) & 0x0FF);
-	entry[4] = (uint8_t)((base >> 16) & 0x0FF);
-	entry[7] = (uint8_t)((base >> 24) & 0x0FF);
-
-	// Encode type
-	entry[5] = type;
-}
+#endif /* ! __KERNEL_X86__ */

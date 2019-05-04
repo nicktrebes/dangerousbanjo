@@ -1,7 +1,10 @@
+#ifndef __X86_ASM_BITS_H__
+#define __X86_ASM_BITS_H__
+
 /*
  * MIT License
  *
- * kernel/kio.c
+ * arch/x86/include/asm/bits.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,38 +26,12 @@
  * SOFTWARE.
  */
 
-#include "kio.h"
+#ifndef __KERNEL_X86__
 
-uint8_t inb(uint16_t port) {
-	uint8_t ret;
-	asm volatile ( "inb %1, %0" : "=a"(ret) : "d"(port) );
-	return ret;
-}
+#if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__)
+#define __KERNEL32__
+#define __KERNEL_X86__
+#endif
 
-void outb(uint8_t value, uint16_t port) {
-	asm volatile ( "outb %0, %1" : : "a"(value), "d"(port) );
-}
-
-void serial_init(uint16_t port) {
-	outb((port + 1),0x00);
-	outb((port + 3),0x80);
-	outb((port + 0),0x03);
-	outb((port + 1),0x00);
-	outb((port + 3),0x03);
-	outb((port + 2),0xC7);
-	outb((port + 4),0x0B);
-}
-
-uint8_t serial_read(uint16_t port) {
-start:
-	if (!(inb(port + 5) & 0x01))
-		goto start;
-	return inb(port);
-}
-
-void serial_write(uint16_t port, uint8_t value) {
-start:
-	if (!(inb(port + 5) & 0x20))
-		goto start;
-	outb(value,port);
-}
+#endif /* ! __KERNEL_X86__ */
+#endif /* ! __X86_ASM_BITS_H__ */

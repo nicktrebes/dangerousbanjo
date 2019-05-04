@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * kernel/boot.s
+ * arch/x86/boot/boot.s
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -65,12 +65,16 @@ kmultiboot_magic:
 .skip 4
 
 .section .text
+.extern kmain
 .global _start
+.global khalt
+.type kmain, @function
 .type _start, @function
+.type khalt, @function
+
 _start:
 	# Move multiboot info and magic to kernel variables
 	movl $(kmultiboot_info - HHBASE), %edi
-	addl $(HHBASE), %ebx
 	movl %ebx, (%edi)
 	movl $(kmultiboot_magic - HHBASE), %edi
 	movl %eax, (%edi)
@@ -130,9 +134,6 @@ _start:
 	jmp *%ecx
 
 6:
-	# Remove the identity mapping
-	movl $0, boot_pd + 0
-
 	# Reload crc3 to force a TLB flush
 	movl %cr3, %ecx
 	movl %ecx, %cr3
@@ -143,8 +144,6 @@ _start:
 	# Enter C environment
 	call kmain
 
-.global khalt
-.type khalt, @function
 khalt:
 	cli
 1:	hlt
