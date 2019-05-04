@@ -1,10 +1,10 @@
-#ifndef __X86_ASM_BITS_H__
-#define __X86_ASM_BITS_H__
+#ifndef __KERNEL_IO_H__
+#define __KERNEL_IO_H__
 
 /*
  * MIT License
  *
- * arch/x86/include/asm/bits.h
+ * include/kernel/info.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,16 +26,28 @@
  * SOFTWARE.
  */
 
-#ifndef __KERNEL_X86__
+#include <kernel/types.h>
 
-#if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__)
-#define __BITS_PER_LONG (32)
-#define __KERNEL32__
-#define __KERNEL_X86__
-#elif defined(__x86_64__) && (!defined(__ILP32__))
-#define __BITS_PER_LONG (64)
-#define __KERNEL_X86__
-#endif
+u8 inb(u16 port);
+u8 inb_p(u16 port);
+u16 inw(u16 port);
+u16 inw_p(u16 port);
+u32 inl(u16 port);
+u32 inl_p(u16 port);
 
-#endif /* ! __KERNEL_X86__ */
-#endif /* ! __X86_ASM_BITS_H__ */
+void insb(u16 port, void* addr, u32 count);
+void insw(u16 port, void* addr, u32 count);
+void insl(u16 port, void* addr, u32 count);
+
+void outb(u8 b, u16 port);
+void outb_p(u8 b, u16 port);
+void outw(u16 w, u16 port);
+void outw_p(u16 w, u16 port);
+void outl(u32 l, u16 port);
+void outl_p(u32 l, u16 port);
+
+void outsb(u16 port, const void* addr, u32 count);
+void outsw(u16 port, const void* addr, u32 count);
+void outsl(u16 port, const void* addr, u32 count);
+
+#endif /* ! __KERNEL_IO_H__ */
