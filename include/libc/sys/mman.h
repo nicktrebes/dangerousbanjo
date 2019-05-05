@@ -1,5 +1,5 @@
-#ifndef __MMAN_H__
-#define __MMAN_H__
+#ifndef __SYS_MMAN_H__
+#define __SYS_MMAN_H__
 
 /*
  * MIT License
@@ -79,4 +79,4 @@ int posix_typed_mem_open(const char* name, int oflag, int tflag);
 int shm_open(const char* name, int oflag, mode_t mode);
 int shm_unlink(const char* name);
 
-#endif /* ! __MMAN_H__ */
+#endif /* ! __SYS_MMAN_H__ */
