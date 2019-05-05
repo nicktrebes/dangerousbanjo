@@ -30,7 +30,7 @@
 #error GNU Compiler Collection required at this time.
 #endif /* ! __GNUC__ */
 
-#include <asm/bits.h>
+#include <asm/atomic.h>
 
 #ifdef __KERNEL_X86__
 #define __cdecl   __attribute__((cdecl))

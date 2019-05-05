@@ -34,21 +34,6 @@ enum {
 	ITIMER_VIRTUAL
 };
 
-struct timeval {
-	time_t      tv_sec;
-	suseconds_t tv_usec;
-};
-
-struct itimerval {
-	struct timeval it_interval;
-	struct timeval it_value;
-};
-
-struct timezone {
-	int tz_minuteswest;
-	int tz_dsttime;
-};
-
 int getitimer(int which, struct itimerval* value);
 int gettimeofday(struct timeval* restrict tv, struct timezone* restrict tz);
 int setitimer(int which, const struct itimerval* restrict value,

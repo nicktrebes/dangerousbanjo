@@ -39,14 +39,6 @@ enum {
 	IPC_STAT
 };
 
-struct ipc_perm {
-	uid_t  uid;
-	gid_t  gid;
-	uid_t  cuid;
-	gid_t  cgid;
-	mode_t mode;
-};
-
 key_t ftok(const char* path, int id);
 
 #endif /* ! __SYS_IPC_H__ */

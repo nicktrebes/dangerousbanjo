@@ -26,6 +26,22 @@
  * SOFTWARE.
  */
 
-#include <sys/time.h>
+#include <time.h>
+
+#define FD_SETSIZE (1024)
+
+#define FD_CLEAR(fd,set) _fd_clear(fd, set)
+#define FD_ISSET(fd,set) _fd_isset(fd, set)
+#define FD_SET(fd,set)   _fd_set(fd, set)
+#define FD_ZERO(set)     _fd_zero(set)
+
+typedef struct {
+	int fd[FD_SETSIZE];
+} fd_set;
+
+void FD_CLEAR(int fd, fd_set* set);
+int FD_ISSET(int fd, fd_set* set);
+void FD_SET(int fd, fd_set* set);
+void FD_ZERO(fd_set* set);
 
 #endif /* ! __SYS_SELECT_H__ */

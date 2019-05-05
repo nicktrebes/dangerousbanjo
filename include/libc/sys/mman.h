@@ -59,10 +59,6 @@
 #define PROT_READ  (1<<0)
 #define PROT_WRITE (1<<0)
 
-struct posix_typed_mem_info {
-	size_t posix_tmi_length;
-};
-
 int mlock(const void* addr, size_t len);
 int mlockall(int flags);
 void* mmap(void* addr, size_t len, int prot, int flags, int fd, off_t offset);

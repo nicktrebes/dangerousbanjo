@@ -1,10 +1,10 @@
-#ifndef __SYS_RESOURCE_H__
-#define __SYS_RESOURCE_H__
+#ifndef __X86_ASM_MCONTEXT_H__
+#define __X86_ASM_MCONTEXT_H__
 
 /*
  * MIT License
  *
- * include/libc/sys/resource.h
+ * arch/x86/include/asm/mcontext.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,31 +26,12 @@
  * SOFTWARE.
  */
 
-#include <sys/time.h>
+#include <asm/bits.h>
+#ifdef __KERNEL_X86__
 
-#define PRIO_PROCESS    (1<<0)
-#define PRIO_PGRP       (1<<1)
-#define PRIO_USER       (1<<2)
-#define RLIM_INFINITY   (0)
-#define RLIM_SAVED_CUR  (RLIM_INFINITY)
-#define RLIM_SAVED_MAX  (RLIM_INFINITY)
-#define RUSAGE_CHILDREN (1<<0)
-#define RUSAGE_SELF     (1<<1)
+typedef struct mcontext {
+	// TODO
+} *mcontext_t; // NOTE: This is a pointer typedef!
 
-enum {
-	RLIMIT_CORE,
-	RLIMIT_CPU,
-	RLIMIT_DATA,
-	RLIMIT_FSIZE,
-	RLIMIT_NOFILE,
-	RLIMIT_STACK,
-	RLIMIT_AS
-};
-
-int getpriority(int which, id_t who);
-int getrlimit(int resource, struct rlimit* rlim);
-int getrusage(int who, struct rusage* usage);
-int setpriority(int which, id_t who, int prio);
-int setrlimit(int resource, const struct rlimit* rlim);
-
-#endif /* ! __SYS_RESOURCE_H__ */
+#endif /* __KERNEL_X86__ */
+#endif /* ! __X86_ASM_MCONTEXT_H__ */
