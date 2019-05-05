@@ -49,8 +49,11 @@ typedef s32    nlink_t;
 typedef s32    off_t;
 typedef s32    pid_t;
 typedef u32    rlim_t;
+typedef u32    sa_family_t;
+typedef u16    shmatt_t;
 typedef u32    sigset_t;
 typedef uptr_t size_t;
+typedef u32    socklen_t;
 typedef sptr_t ssize_t;
 typedef s32    suseconds_t;
 typedef s64    time_t;
@@ -66,6 +69,16 @@ struct timeval;
 typedef struct siginfo siginfo_t;
 
 /* Structure definitions */
+
+struct cmsghdr {
+	socklen_t cmsg_len;
+	int       cmsg_level;
+	int       cmsg_type;
+};
+
+struct iovec {
+	// TODO
+};
 
 struct ipc_perm {
 	uid_t  uid;
@@ -83,6 +96,21 @@ struct itimerspec {
 struct itimerval {
 	struct timeval it_interval;
 	struct timeval it_value;
+};
+
+struct linger {
+	int l_onoff;
+	int l_linger;
+};
+
+struct msghdr {
+	void*         msg_name;
+	socklen_t     msg_namelen;
+	struct iovec* msg_iov;
+	int           msg_iovlen;
+	void*         msg_control;
+	socklen_t     msg_controllen;
+	int           msg_flags;
 };
 
 struct msqid_ds {
@@ -158,6 +186,30 @@ struct rusage {
 	struct timeval ru_stime;
 };
 
+struct sembuf {
+	unsigned short sem_num;
+	short          sem_op;
+	short          sem_flg;
+};
+
+struct semid_ds {
+	struct ipc_perm sem_perm;
+	unsigned short  sem_nsems;
+	time_t          sem_otime;
+	time_t          sem_ctime;
+};
+
+struct shmid_ds {
+	struct ipc_perm shm_perm;
+	size_t          shm_segsz;
+	pid_t           shm_lpid;
+	pid_t           shm_cpid;
+	shmatt_t        shm_nattch;
+	time_t          shm_atime;
+	time_t          shm_dtime;
+	time_t          shm_ctime;
+};
+
 struct sigaction {
 	void     (*sa_handler)(int);
 	sigset_t sa_mask;
@@ -188,6 +240,15 @@ struct siginfo {
 union sigval {
 	int   sigval_int;
 	void* sigval_ptr;
+};
+
+struct sockaddr {
+	sa_family_t sa_family;
+	char        sa_data[];
+};
+
+struct sockaddr_storage {
+	sa_family_t sa_family;
 };
 
 struct stack {
