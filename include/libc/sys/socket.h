@@ -76,24 +76,25 @@ enum {
 	SOCK_DGRAM
 };
 
-int accept(int, struct sockaddr* restrict, socklen_t* restrict);
-int bind(int, const struct sockaddr*, socklen_t);
-int connect(int, const struct sockaddr*, socklen_t);
-int getpeername(int, struct sockaddr* restrict, socklen_t* restrict);
-int getsockname(int, struct sockaddr* restrict, socklen_t* restrict);
-int getsockopt(int, int, int, void* restrict, socklen_t* restrict);
-int listen(int, int);
-ssize_t recv(int, void*, size_t, int);
-ssize_t recvfrom(int, void* restrict, size_t, int,
-	struct sockaddr* restrict, socklen_t* restrict);
-ssize_t recvmsg(int, struct msghdr*, int);
-ssize_t send(int, const void*, size_t, int);
-ssize_t sendmsg(int, const struct msghdr*, int);
-ssize_t sendto(int, const void*, size_t, int, const struct sockaddr*, socklen_t);
-int setsockopt(int, int, int, const void*, socklen_t);
-int shutdown(int, int);
-int sockatmark(int);
-int socket(int, int, int);
-int socketpair(int, int, int, int, int[2]);
+int accept(int fd, struct sockaddr* restrict addr, socklen_t* restrict len);
+int bind(int fd, const struct sockaddr* addr, socklen_t len);
+int connect(int fd, const struct sockaddr* addr, socklen_t len);
+int getpeername(int fd, struct sockaddr* restrict addr, socklen_t* restrict len);
+int getsockname(int fd, struct sockaddr* restrict addr, socklen_t* restrict len);
+int getsockopt(int fd, int level, int opt, void* restrict val, socklen_t* restrict len);
+int listen(int fd, int backlog);
+ssize_t recv(int fd, void* buf, size_t len, int flags);
+ssize_t recvfrom(int fd, void* restrict buf, size_t blen, int flags,
+	struct sockaddr* restrict addr, socklen_t* restrict alen);
+ssize_t recvmsg(int fd, struct msghdr* msg, int flags);
+ssize_t send(int fd, const void* buf, size_t len, int flags);
+ssize_t sendmsg(int fd, const struct msghdr* msg, int flags);
+ssize_t sendto(int fd, const void* buf, size_t blen, int flags,
+	const struct sockaddr* addr, socklen_t alen);
+int setsockopt(int fd, int level, int opt, const void* val, socklen_t len);
+int shutdown(int fd, int how);
+int sockatmark(int fd);
+int socket(int domain, int type, int protocol);
+int socketpair(int domain, int type, int protocol, int sv[2]);
 
 #endif /* ! __SYS_SOCKET_H__ */
