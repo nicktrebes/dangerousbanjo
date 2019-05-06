@@ -1,10 +1,10 @@
-#ifndef __STDARG_H__
-#define __STDARG_H__
+#ifndef __NETINET_IN_H__
+#define __NETINET_IN_H__
 
 /*
  * MIT License
  *
- * include/libc/stdarg.h
+ * include/libc/netinet/in.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,25 +26,20 @@
  * SOFTWARE.
  */
 
-#include <stddef.h>
+#include <arpa/inet.h>
 
-#ifdef __KERNEL32__
-#define _STACK_ELEM (4)
-#else /* __KERNEL32__ */
-#define _STACK_ELEM (8)
-#endif /* __KERNEL32__ */
+#define INADDR_ANY       (0xFFFFFFFF)
+#define INADDR_BROADCAST (INADDR_ANY)
+#define INET_ADDRSTRLEN  (16)
+#define INET6_ADDRSTRLEN (46)
 
-#define _STACK_OFFSET(type) ((sizeof(type) % _STACK_ELEM) ? \
-	(((sizeof(type) / _STACK_ELEM) + 1) * _STACK_ELEM) : sizeof(type))
+const struct in6_addr in6addr_any = {{
+	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
+}};
 
-#define va_arg(list,type) (*(type*)(((size_t)(list = (va_list)(((size_t)list) \
-	+ _STACK_OFFSET(type)))) \
-	- _STACK_OFFSET(type)))
-#define va_copy(dst,src) (((va_list)dst) = ((va_list)src))
-#define va_end(list) ((void)(list = ((va_list)NULL)))
-#define va_start(list,param) (list = (va_list)(((size_t)(&param)) \
-	+ _STACK_OFFSET(param)))
+const struct in6_addr in6addr_loopback = {{
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+}};
 
-typedef void* va_list;
-
-#endif /* ! __STDARG_H__ */
+#endif /* ! __NETINET_IN_H__ */

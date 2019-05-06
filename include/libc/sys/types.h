@@ -29,6 +29,8 @@
 #include <asm/mcontext.h>
 #include <kernel/types.h>
 
+#define BUFSIZ (4096)
+
 /* Integer typedefs */
 
 typedef s32    blkcnt_t;
@@ -36,10 +38,13 @@ typedef s32    blksize_t;
 typedef u64    clock_t;
 typedef s32    clockid_t;
 typedef s32    dev_t;
+typedef uptr_t fpos_t;
 typedef u32    fsblkcnt_t;
 typedef u32    fsfilcnt_t;
 typedef s32    gid_t;
 typedef s32    id_t;
+typedef u32    in_addr_t;
+typedef u16    in_port_t;
 typedef u32    ino_t;
 typedef s32    key_t;
 typedef s32    mode_t;
@@ -66,14 +71,45 @@ union  sigval;
 struct timespec;
 struct timeval;
 
-typedef struct siginfo siginfo_t;
+typedef struct pthread_attr pthread_attr_t;
+typedef struct siginfo      siginfo_t;
 
 /* Structure definitions */
+
+struct aiocb {
+	int             aio_fildes;
+	off_t           aio_offset;
+	volatile void*  aio_buf;
+	size_t          aio_nbytes;
+	int             aio_reqprio;
+	struct sigevent aio_sigevent;
+	int             aio_lio_opcode;
+};
 
 struct cmsghdr {
 	socklen_t cmsg_len;
 	int       cmsg_level;
 	int       cmsg_type;
+};
+
+struct flock {
+	short l_type;
+	short l_whence;
+	off_t l_start;
+	off_t l_len;
+	pid_t l_pid;
+};
+
+struct FILE {
+	// TODO
+};
+
+struct in_addr {
+	in_addr_t s_addr;
+};
+
+struct in6_addr {
+	u8 s6_addr[16];
 };
 
 struct iovec {
@@ -87,6 +123,11 @@ struct ipc_perm {
 	uid_t  cuid;
 	gid_t  cgid;
 	mode_t mode;
+};
+
+struct ipv6_mreq {
+	struct in6_addr ipv6mr_multiaddr;
+	unsigned        ipv6mr_interface;
 };
 
 struct itimerspec {
@@ -248,6 +289,20 @@ struct sockaddr {
 	char        sa_data[];
 };
 
+struct sockaddr_in {
+	sa_family_t    sin_family;
+	in_port_t      sin_port;
+	struct in_addr sin_addr;
+};
+
+struct sockaddr_in6 {
+	sa_family_t     sin6_family;
+	in_port_t       sin6_port;
+	u32             sin6_flowinfo;
+	struct in6_addr sin6_addr;
+	u32             sin6_scope_id;
+};
+
 struct sockaddr_storage {
 	sa_family_t sa_family;
 };
@@ -364,8 +419,8 @@ struct utsname {
 
 /* Structure typedefs */
 
+typedef struct FILE                FILE;
 typedef struct pthread*            pthread_t; // NOTE: This is a pointer typedef!
-typedef struct pthread_attr        pthread_attr_t;
 typedef struct pthread_barrier     pthread_barrier_t;
 typedef struct pthread_barrierattr pthread_barrierattr_t;
 typedef struct pthread_cond        pthread_cond_t;

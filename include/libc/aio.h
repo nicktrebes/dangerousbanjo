@@ -1,10 +1,10 @@
-#ifndef __STDARG_H__
-#define __STDARG_H__
+#ifndef __AIO_H__
+#define __AIO_H__
 
 /*
  * MIT License
  *
- * include/libc/stdarg.h
+ * include/libc/aio.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,25 +26,29 @@
  * SOFTWARE.
  */
 
-#include <stddef.h>
+#include <fcntl.h>
+#include <signal.h>
 
-#ifdef __KERNEL32__
-#define _STACK_ELEM (4)
-#else /* __KERNEL32__ */
-#define _STACK_ELEM (8)
-#endif /* __KERNEL32__ */
+enum {
+	AIO_ALLDONE,
+	AIO_CANCELED,
+	AIO_NOTCANCELED,
+	LIO_NOP,
+	LIO_NOWAIT,
+	LIO_READ,
+	LIO_WAIT,
+	LIO_WRITE
+};
 
-#define _STACK_OFFSET(type) ((sizeof(type) % _STACK_ELEM) ? \
-	(((sizeof(type) / _STACK_ELEM) + 1) * _STACK_ELEM) : sizeof(type))
+int aio_cancel(int fd, struct aiocb* ptr);
+int aio_error(const struct aiocb* ptr);
+int aio_fsync(int fd, struct aiocb* ptr);
+int aio_read(struct aiocb* ptr);
+ssize_t aio_return(struct aiocb* ptr);
+int aio_suspend(const struct aiocb* const list[], int items,
+	const struct timespec* timeout);
+int aio_write(struct aiocb* ptr);
+int lio_listio(int mode, struct aiocb* restrict const list[restrict],
+	int items, struct sigevent* restrict sevp);
 
-#define va_arg(list,type) (*(type*)(((size_t)(list = (va_list)(((size_t)list) \
-	+ _STACK_OFFSET(type)))) \
-	- _STACK_OFFSET(type)))
-#define va_copy(dst,src) (((va_list)dst) = ((va_list)src))
-#define va_end(list) ((void)(list = ((va_list)NULL)))
-#define va_start(list,param) (list = (va_list)(((size_t)(&param)) \
-	+ _STACK_OFFSET(param)))
-
-typedef void* va_list;
-
-#endif /* ! __STDARG_H__ */
+#endif /* ! __AIO_H__ */
