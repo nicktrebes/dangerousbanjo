@@ -77,7 +77,8 @@ struct cmsghdr {
 };
 
 struct iovec {
-	// TODO
+	void*  iov_base;
+	size_t iov_len;
 };
 
 struct ipc_perm {
@@ -251,6 +252,11 @@ struct sockaddr_storage {
 	sa_family_t sa_family;
 };
 
+struct sockaddr_un {
+	sa_family_t sun_family;
+	char        sun_path[];
+};
+
 struct stack {
 	void*  ss_sp;
 	size_t ss_size;
@@ -271,6 +277,20 @@ struct stat {
 	struct timespec st_ctim;
 	blksize_t       st_blksize;
 	blkcnt_t        st_blocks;
+};
+
+struct statvfs {
+	unsigned long f_bsize;
+	unsigned long f_frsize;
+	fsblkcnt_t    f_block;
+	fsblkcnt_t    f_bfree;
+	fsblkcnt_t    f_bavail;
+	fsfilcnt_t    f_files;
+	fsfilcnt_t    f_ffree;
+	fsfilcnt_t    f_favail;
+	unsigned long f_fsid;
+	unsigned long f_flag;
+	unsigned long f_namemax;
 };
 
 struct timer {
@@ -304,6 +324,13 @@ struct tm {
 	int tm_isdst;
 };
 
+struct tms {
+	clock_t tms_utime;
+	clock_t tms_stime;
+	clock_t tms_cutime;
+	clock_t tms_cstime;
+};
+
 struct trace_attr {
 	// TODO
 };
@@ -325,6 +352,14 @@ struct ucontext {
 	sigset_t         uc_sigmask;
 	struct stack     uc_stack;
 	mcontext_t       uc_mcontext;
+};
+
+struct utsname {
+	char sysname[];
+	char nodename[];
+	char release[];
+	char version[];
+	char machine[];
 };
 
 /* Structure typedefs */
