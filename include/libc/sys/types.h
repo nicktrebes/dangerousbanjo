@@ -113,7 +113,10 @@ struct flock {
 };
 
 struct FILE {
-	// TODO
+	char*  buf;
+	fpos_t pos;
+	size_t len, ptr;
+	int    fd, flags;
 };
 
 struct in_addr {

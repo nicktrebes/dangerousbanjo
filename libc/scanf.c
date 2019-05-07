@@ -105,11 +105,16 @@ static int _scanf_internal(_scanf_t* restrict data, const char* restrict fmt, va
 }
 
 static int _scanf_read_file(_scanf_src_t* restrict src, int* restrict c) {
-	// TODO
+	int res = fgetc(src->file);
+	if (res < 0) return 1;
+	*c = res;
 	return 0;
 }
 
 static int _scanf_read_str(_scanf_src_t* restrict src, int* restrict c) {
-	// TODO
+	int res = src->str.buf[src->str.ptr];
+	if (res == 0) return 1;
+	*c = res;
+	++src->str.ptr;
 	return 0;
 }
