@@ -1,7 +1,10 @@
+#ifndef __SYS_STATVFS_H__
+#define __SYS_STATVFS_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/sys/statvfs.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,12 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <sys/statvfs.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#define ST_RDONLY (1<<0)
+#define ST_NOSUID (1<<1)
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+int fstatvfs(int fd, struct statvfs* buf);
+int statvfs(const char* restrict path, struct statvfs* restrict buf);
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __SYS_STATVFS_H__ */

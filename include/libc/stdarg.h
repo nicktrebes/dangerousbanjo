@@ -1,7 +1,10 @@
+#ifndef __STDARG_H__
+#define __STDARG_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/stdarg.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,25 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <stddef.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#ifdef __KERNEL32__
+#define _STACK_ELEM (4)
+#else /* __KERNEL32__ */
+#define _STACK_ELEM (8)
+#endif /* __KERNEL32__ */
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+#define _STACK_OFFSET(type) ((sizeof(type) % _STACK_ELEM) ? \
+	(((sizeof(type) / _STACK_ELEM) + 1) * _STACK_ELEM) : sizeof(type))
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#define va_arg(list,type) (*(type*)(((size_t)(list = (va_list)(((size_t)list) \
+	+ _STACK_OFFSET(type)))) \
+	- _STACK_OFFSET(type)))
+#define va_copy(dst,src) (((va_list)dst) = ((va_list)src))
+#define va_end(list) ((void)(list = ((va_list)NULL)))
+#define va_start(list,param) (list = (va_list)(((size_t)(&param)) \
+	+ _STACK_OFFSET(param)))
+
+typedef void* va_list;
+
+#endif /* ! __STDARG_H__ */

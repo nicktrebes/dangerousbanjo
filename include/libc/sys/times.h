@@ -1,7 +1,10 @@
+#ifndef __SYS_TIMES_H__
+#define __SYS_TIMES_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/sys/times.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,8 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <sys/types.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+clock_t times(struct tms* buf);
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
-
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __SYS_TIMES_H__ */

@@ -1,7 +1,10 @@
+#ifndef __ERRNO_H__
+#define __ERRNO_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/errno.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,90 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+enum {
+	E2BIG,
+	EACCES,
+	EADDRINUSE,
+	EADDRNOTAVAIL,
+	EAFNOSUPPORT,
+	EAGAIN,
+	EALREADY,
+	EBADF,
+	EBADMSG,
+	EBUSY,
+	ECANCELED,
+	ECHILD,
+	ECONNABORTED,
+	ECONNREFUSED,
+	ECONNRESET,
+	EDEADLK,
+	EDESTADDRREQ,
+	EDOM,
+	EDQUOT,
+	EEXIST,
+	EFAULT,
+	EFBIG,
+	EHOSTUNREACH,
+	EIDRM,
+	EILSEQ,
+	EINPROGRESS,
+	EINTR,
+	EINVAL,
+	EIO,
+	EISCONN,
+	EISDIR,
+	ELOOP,
+	EMFILE,
+	EMLINK,
+	EMSGSIZE,
+	EMULTIHOP,
+	ENAMETOOLONG,
+	ENETDOWN,
+	ENETRESET,
+	ENETUNREACH,
+	ENFILE,
+	ENOBUFS,
+	ENODATA,
+	ENODEV,
+	ENOENT,
+	ENOEXEC,
+	ENOLCK,
+	ENOLINK,
+	ENOMEM,
+	ENOMSG,
+	ENOPROTOOPT,
+	ENOSPC,
+	ENOSR,
+	ENOSTR,
+	ENOSYS,
+	ENOTCONN,
+	ENOTDIR,
+	ENOTEMPTY,
+	ENOTRECOVERABLE,
+	ENOTSOCK,
+	ENOTSUP,
+	ENOTTY,
+	ENXIO,
+	EOPNOTSUPP,
+	EOVERFLOW,
+	EOWNERDEAD,
+	EPERM,
+	EPIPE,
+	EPROTO,
+	EPROTONOSUPPORT,
+	EPROTOTYPE,
+	ERANGE,
+	EROFS,
+	ESPIPE,
+	ESRCH,
+	ESTALE,
+	ETIME,
+	ETIMEDOUT,
+	ETXTBSY,
+	EWOULDBLOCK,
+	EXDEV
+};
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+extern int errno;
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
-
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __ERRNO_H__ */

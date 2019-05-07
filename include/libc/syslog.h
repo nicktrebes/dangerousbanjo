@@ -1,7 +1,10 @@
+#ifndef __SYSLOG_H__
+#define __SYSLOG_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/syslog.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,48 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#define LOG_PID    (1<<0)
+#define LOG_CONS   (1<<1)
+#define LOG_NDELAY (1<<2)
+#define LOG_ODELAY (1<<3)
+#define LOG_NOWAIT (1<<4)
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#define LOG_MASK(pri) (0 /* TODO */)
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+enum {
+	LOG_KERN,
+	LOG_USER,
+	LOG_MAIL,
+	LOG_NEWS,
+	LOG_UUCP,
+	LOG_DAEMON,
+	LOG_AUTH,
+	LOG_CRON,
+	LOG_LPR,
+	LOG_LOCAL0,
+	LOG_LOCAL1,
+	LOG_LOCAL2,
+	LOG_LOCAL3,
+	LOG_LOCAL4,
+	LOG_LOCAL5,
+	LOG_LOCAL6,
+	LOG_LOCAL7
+};
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+enum {
+	LOG_EMERG,
+	LOG_ALERT,
+	LOG_CRIT,
+	LOG_ERR,
+	LOG_WARNING,
+	LOG_NOTICE,
+	LOG_INFO,
+	LOG_DEBUG
+};
+
+void closelog(void);
+void openlog(const char* indent, int options, int facility);
+int setlogmask(int mask);
+void syslog(int priority, const char* fmt, ...);
+
+#endif /* ! __SYSLOG_H__ */

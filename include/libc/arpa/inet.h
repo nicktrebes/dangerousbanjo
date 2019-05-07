@@ -1,7 +1,10 @@
+#ifndef __ARPA_INET_H__
+#define __ARPA_INET_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/arpa/inet.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,16 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <sys/types.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+uint32_t htonl(uint32_t);
+uint16_t htons(uint16_t);
+uint32_t ntohl(uint32_t);
+uint16_t ntohs(uint16_t);
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+in_addr_t inet_addr(const char *);
+char* inet_ntoa(struct in_addr);
+const char* inet_ntop(int, const void* restrict, char* restrict, socklen_t);
+int inet_pton(int, const char* restrict, void* restrict);
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __ARPA_INET_H__ */

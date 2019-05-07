@@ -1,7 +1,10 @@
+#ifndef __X86_ASM_BITS_H__
+#define __X86_ASM_BITS_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * arch/x86/include/asm/bits.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,16 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#ifndef __KERNEL_X86__
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__)
+#define __BITS_PER_LONG (32)
+#define __KERNEL32__
+#define __KERNEL_X86__
+#elif defined(__x86_64__) && (!defined(__ILP32__))
+#define __BITS_PER_LONG (64)
+#define __KERNEL_X86__
+#endif
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
-
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __KERNEL_X86__ */
+#endif /* ! __X86_ASM_BITS_H__ */

@@ -1,7 +1,10 @@
+#ifndef __SYS_SEM_H__
+#define __SYS_SEM_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/sys/sem.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,22 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <sys/ipc.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#define SEM_UNDO (1<<14)
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+enum {
+	GETNCNT,
+	GETPID,
+	GETVAL,
+	GETALL,
+	GETZCNT,
+	SETVAL,
+	SETALL
+};
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+int semctl(int semid, int semnum, int cmd, ...);
+int semget(key_t key, int nsems, int semflg);
+int semop(int semid, struct sembuf* sops, size_t nsops);
+
+#endif /* ! __SYS_SEM_H__ */

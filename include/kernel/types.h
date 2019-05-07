@@ -1,7 +1,10 @@
+#ifndef __KERNEL_TYPES_H__
+#define __KERNEL_TYPES_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/kernel/types.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,43 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#ifndef __GNUC__
+#error GNU Compiler Collection required at this time.
+#endif /* ! __GNUC__ */
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#include <asm/atomic.h>
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+#ifdef __KERNEL_X86__
+#define __cdecl   __attribute__((cdecl))
+#define __stdcall __attribute__((stdcall))
+#else /* __KERNEL_X86__ */
+#define __cdecl
+#define __stdcall
+#endif /* __KERNEL_X86__ */
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#define __aligned(n)    __attribute__((aligned(n)))
+#define __format(t,s,f) __attribute__((format(t,s,f)))
+#define __noreturn      __attribute__((noreturn))
+#define __packed        __attribute__((packed))
+#define __pure          __attribute__((pure))
+#define __unused        __attribute__((unused))
+
+typedef __INT8_TYPE__  s8;
+typedef __INT16_TYPE__ s16;
+typedef __INT32_TYPE__ s32;
+typedef __INT64_TYPE__ s64;
+
+typedef __UINT8_TYPE__  u8;
+typedef __UINT16_TYPE__ u16;
+typedef __UINT32_TYPE__ u32;
+typedef __UINT64_TYPE__ u64;
+
+#ifdef __KERNEL32__
+typedef s32 sptr_t;
+typedef u32 uptr_t;
+#else /* __KERNEL32__ */
+typedef s64 sptr_t;
+typedef u64 uptr_t;
+#endif /* __KERNEL32__ */
+
+#endif /* ! __KERNEL_TYPES_H__ */

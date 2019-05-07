@@ -1,7 +1,10 @@
+#ifndef __SYS_MSG_H__
+#define __SYS_MSG_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/sys/msg.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,14 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#include <sys/ipc.h>
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+#define MSG_NOERROR (1<<0)
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+int msgctl(int msqid, int cmd, struct msqid_ds* buf);
+int msgget(key_t key, int msgflg);
+ssize_t msgrcv(int msqid, void* msgp, size_t msgsz, long msgtyp, int msgflg);
+int msgsnd(int msqid, const void* msgp, size_t msgsz, int msgflg);
+
+#endif /* ! __SYS_MSG_H__ */

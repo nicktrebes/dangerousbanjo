@@ -1,7 +1,10 @@
+#ifndef __SYS_IPC_H__
+#define __SYS_IPC_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/sys/ipc.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,19 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <sys/types.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#define IPC_CREAT   (1<<15)
+#define IPC_EXCL    (1<<14)
+#define IPC_NOWAIT  (1<<13)
+#define IPC_PRIVATE ((key_t)(-1) /* TODO */)
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+enum {
+	IPC_RMID,
+	IPC_SET,
+	IPC_STAT
+};
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+key_t ftok(const char* path, int id);
+
+#endif /* ! __SYS_IPC_H__ */

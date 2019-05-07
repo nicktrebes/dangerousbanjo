@@ -1,7 +1,10 @@
+#ifndef __X86_ASM_FENV_H__
+#define __X86_ASM_FENV_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * arch/x86/include/asm/fenv.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,10 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <asm/bits.h>
+#ifdef __KERNEL_X86__
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+// TODO
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
-
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* __KERNEL_X86__ */
+#endif /* ! __X86_ASM_FENV_H__ */

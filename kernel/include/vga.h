@@ -1,7 +1,10 @@
+#ifndef __KERNEL_VGA_H__
+#define __KERNEL_VGA_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * kernel/include/vga.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,33 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <kernel/types.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+typedef enum {
+	VGA_COLOR_BLACK         = 0,
+	VGA_COLOR_BLUE          = 1,
+	VGA_COLOR_GREEN         = 2,
+	VGA_COLOR_CYAN          = 3,
+	VGA_COLOR_RED           = 4,
+	VGA_COLOR_MAGENTA       = 5,
+	VGA_COLOR_BROWN         = 6,
+	VGA_COLOR_LIGHT_GREY    = 7,
+	VGA_COLOR_DARK_GREY     = 8,
+	VGA_COLOR_LIGHT_BLUE    = 9,
+	VGA_COLOR_LIGHT_GREEN   = 10,
+	VGA_COLOR_LIGHT_CYAN    = 11,
+	VGA_COLOR_LIGHT_RED     = 12,
+	VGA_COLOR_LIGHT_MAGENTA = 13,
+	VGA_COLOR_LIGHT_BROWN   = 14,
+	VGA_COLOR_WHITE         = 15
+} vga_color_t;
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+void vga_clear(void);
+void vga_color(vga_color_t fg, vga_color_t bg);
+void vga_cursor(u8 row, u8 col);
+void vga_init(void);
+void vga_putc(char c);
+void vga_puts(const char* str);
+void vga_scroll(u8 lines);
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __X86_BOOT_VGA_H__ */

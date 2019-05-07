@@ -1,7 +1,10 @@
+#ifndef __AIO_H__
+#define __AIO_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/aio.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,29 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <fcntl.h>
+#include <signal.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+enum {
+	AIO_ALLDONE,
+	AIO_CANCELED,
+	AIO_NOTCANCELED,
+	LIO_NOP,
+	LIO_NOWAIT,
+	LIO_READ,
+	LIO_WAIT,
+	LIO_WRITE
+};
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+int aio_cancel(int fd, struct aiocb* ptr);
+int aio_error(const struct aiocb* ptr);
+int aio_fsync(int fd, struct aiocb* ptr);
+int aio_read(struct aiocb* ptr);
+ssize_t aio_return(struct aiocb* ptr);
+int aio_suspend(const struct aiocb* const list[], int items,
+	const struct timespec* timeout);
+int aio_write(struct aiocb* ptr);
+int lio_listio(int mode, struct aiocb* restrict const list[restrict],
+	int items, struct sigevent* restrict sevp);
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __AIO_H__ */

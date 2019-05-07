@@ -1,7 +1,10 @@
+#ifndef __SYS_SELECT_H__
+#define __SYS_SELECT_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/sys/select.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,22 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <time.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#define FD_SETSIZE (1024)
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+#define FD_CLEAR(fd,set) _fd_clear(fd, set)
+#define FD_ISSET(fd,set) _fd_isset(fd, set)
+#define FD_SET(fd,set)   _fd_set(fd, set)
+#define FD_ZERO(set)     _fd_zero(set)
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+typedef struct {
+	int fd[FD_SETSIZE];
+} fd_set;
+
+void FD_CLEAR(int fd, fd_set* set);
+int FD_ISSET(int fd, fd_set* set);
+void FD_SET(int fd, fd_set* set);
+void FD_ZERO(fd_set* set);
+
+#endif /* ! __SYS_SELECT_H__ */

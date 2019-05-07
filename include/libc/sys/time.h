@@ -1,7 +1,10 @@
+#ifndef __SYS_TIME_H__
+#define __SYS_TIME_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/sys/time.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,18 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <sys/types.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+enum {
+	ITIMER_PROF,
+	ITIMER_REAL,
+	ITIMER_VIRTUAL
+};
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+int getitimer(int which, struct itimerval* value);
+int gettimeofday(struct timeval* restrict tv, struct timezone* restrict tz);
+int setitimer(int which, const struct itimerval* restrict value,
+	struct itimerval* restrict old);
+int utimes(const char* path, const struct timeval times[2]);
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __SYS_TIME_H__ */

@@ -1,7 +1,10 @@
+#ifndef __KERNEL_KUTIL_H__
+#define __KERNEL_KUTIL_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * kernel/include/kutil.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,11 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <kernel/types.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+void khalt(void) __noreturn;
+void klogf(const char* fmt, ...) __format(printf,1,2);
+void kpanic(const char* msg) __noreturn;
+void kprintf(const char* fmt, ...) __format(printf,1,2);
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
-
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __KERNEL_KUTIL_H__ */

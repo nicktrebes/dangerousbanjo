@@ -1,7 +1,10 @@
+#ifndef __KERNEL_INFO_H__
+#define __KERNEL_INFO_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/kernel/info.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,9 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#define KERNEL_NAME          ("DANGEROUSBANJO")
+#define KERNEL_VERSION_MAJOR (0)
+#define KERNEL_VERSION_MINOR (0)
+#define KERNEL_VERSION_PATCH (0)
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
-
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
-
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif

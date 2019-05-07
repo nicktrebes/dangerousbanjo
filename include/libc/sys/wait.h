@@ -1,7 +1,10 @@
+#ifndef __SYS_WAIT_H__
+#define __SYS_WAIT_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/sys/wait.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,38 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <sys/types.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+enum {
+	WCONTINUED,
+	WNOHANG,
+	WUNTRACED
+};
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+enum {
+	WEXITSTATUS,
+	WIFCONTINUED,
+	WIFEXITED,
+	WIFSIGNALED,
+	WIFSTOPPED,
+	WSTOPSIG,
+	WTERMSIG
+};
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+enum {
+	WEXITED,
+	WNOWAIT,
+	WSTOPPED
+};
+
+typedef enum {
+	P_ALL,
+	P_PGID,
+	P_PID
+} idtype_t;
+
+pid_t wait(int* status);
+int waitid(idtype_t type, id_t id, siginfo_t* info, int options);
+pid_t waitpid(pid_t pid, int* status, int options);
+
+#endif /* ! __SYS_WAIT_H__ */

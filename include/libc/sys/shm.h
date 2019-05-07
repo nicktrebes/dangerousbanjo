@@ -1,7 +1,10 @@
+#ifndef __SYS_SHM_H__
+#define __SYS_SHM_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/sys/shm.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,13 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <sys/ipc.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+// TODO: define constants
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+void* shmat(int id, const void* addr, int flg);
+int shmctl(int id, int cmd, struct shmid_ds* buf);
+int shmdt(const void* addr);
+int shmget(key_t key, size_t size, int flg);
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __SYS_SHM_H__ */

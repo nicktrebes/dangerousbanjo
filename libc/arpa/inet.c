@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * libc/arpa/inet.c
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +23,4 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
-
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
-
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
-
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#include <arpa/inet.h>

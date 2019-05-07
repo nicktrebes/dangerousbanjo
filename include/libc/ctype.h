@@ -1,7 +1,10 @@
+#ifndef __CTYPE_H__
+#define __CTYPE_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/ctype.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,40 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <locale.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#define _tolower(c) (((c >= 'A') & (c <= 'Z')) ? ((c - 'A') + 'a') : c)
+#define _toupper(c) (((c >= 'a') & (c <= 'z')) ? ((c - 'a') + 'A') : c)
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+int isalnum(int c);
+int isalnum_l(int c, locale_t locale);
+int isalpha(int c);
+int isalpha_l(int c, locale_t locale);
+int isascii(int c);
+int isblank(int c);
+int isblank_l(int c, locale_t locale);
+int iscntrl(int c);
+int iscntrl_l(int c, locale_t locale);
+int isdigit(int c);
+int isdigit_l(int c, locale_t locale);
+int isgraph(int c);
+int isgraph_l(int c, locale_t locale);
+int islower(int c);
+int islower_l(int c, locale_t locale);
+int isprint(int c);
+int isprint_l(int c, locale_t locale);
+int ispunct(int c);
+int ispunct_l(int c, locale_t locale);
+int isspace(int c);
+int isspace_l(int c, locale_t locale);
+int isupper(int c);
+int isupper_l(int c, locale_t locale);
+int isxdigit(int c);
+int isxdigit_l(int c, locale_t locale);
+int toascii(int c);
+int tolower(int c);
+int tolower_l(int c, locale_t locale);
+int toupper(int c);
+int toupper_l(int c, locale_t locale);
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __CTYPE_H__ */

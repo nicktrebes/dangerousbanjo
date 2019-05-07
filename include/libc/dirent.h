@@ -1,7 +1,10 @@
+#ifndef __DIRENT_H__
+#define __DIRENT_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/dirent.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,23 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <sys/types.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#define NAME_MAX (255)
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+int alphasort(const struct dirent** d0, const struct dirent** d1);
+int closedir(DIR* dir);
+int dirfd(DIR* dir);
+DIR* fdopendir(int fd);
+DIR* opendir(const char* path);
+struct dirent* readdir(DIR* dir);
+int readdir_r(DIR* restrict dir, struct dirent* restrict entry,
+	struct dirent** restrict result);
+void rewinddir(DIR* dir);
+int scandir(const char* path, struct dirent*** list,
+	int (*sel)(const struct dirent*),
+	int (*cmp)(const struct dirent**, const struct dirent**));
+void seekdir(DIR* dir, long loc);
+long telldir(DIR* dir);
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __DIRENT_H__ */

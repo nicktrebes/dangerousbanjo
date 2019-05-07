@@ -1,7 +1,10 @@
+#ifndef __STDDEF_H__
+#define __STDDEF_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/stddef.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,12 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <kernel/types.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#define NULL ((void*)0)
+#define offsetof(type,member) ((size_t)(&((type*)0)->member))
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+typedef __PTRDIFF_TYPE__ ptrdiff_t;
+typedef __SIZE_TYPE__ size_t;
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#endif /* ! __STDDEF_H__ */

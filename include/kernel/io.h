@@ -1,7 +1,10 @@
+#ifndef __KERNEL_IO_H__
+#define __KERNEL_IO_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/kernel/info.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,28 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <kernel/types.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+u8 inb(u16 port);
+u8 inb_p(u16 port);
+u16 inw(u16 port);
+u16 inw_p(u16 port);
+u32 inl(u16 port);
+u32 inl_p(u16 port);
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+void insb(u16 port, void* addr, u32 count);
+void insw(u16 port, void* addr, u32 count);
+void insl(u16 port, void* addr, u32 count);
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+void outb(u8 b, u16 port);
+void outb_p(u8 b, u16 port);
+void outw(u16 w, u16 port);
+void outw_p(u16 w, u16 port);
+void outl(u32 l, u16 port);
+void outl_p(u32 l, u16 port);
+
+void outsb(u16 port, const void* addr, u32 count);
+void outsw(u16 port, const void* addr, u32 count);
+void outsl(u16 port, const void* addr, u32 count);
+
+#endif /* ! __KERNEL_IO_H__ */

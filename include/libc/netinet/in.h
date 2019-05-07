@@ -1,7 +1,10 @@
+#ifndef __NETINET_IN_H__
+#define __NETINET_IN_H__
+
 /*
  * MIT License
  *
- * kernel/kutil.c
+ * include/libc/netinet/in.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,17 +26,20 @@
  * SOFTWARE.
  */
 
-#include <kutil.h>
-#include <stdarg.h>
+#include <arpa/inet.h>
 
-void klogf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+#define INADDR_ANY       (0xFFFFFFFF)
+#define INADDR_BROADCAST (INADDR_ANY)
+#define INET_ADDRSTRLEN  (16)
+#define INET6_ADDRSTRLEN (46)
 
-void kpanic(const char* msg) __noreturn {
-	// TODO
-}
+const struct in6_addr in6addr_any = {{
+	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
+	0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF
+}};
 
-void kprintf(const char* fmt, ...) __format(printf,1,2) {
-	// TODO
-}
+const struct in6_addr in6addr_loopback = {{
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+}};
+
+#endif /* ! __NETINET_IN_H__ */
