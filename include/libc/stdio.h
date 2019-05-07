@@ -57,7 +57,7 @@ void clearerr(FILE* file);
 char* ctermid(char* buf);
 int dprintf(int fd, const char* restrict fmt, ...) __format(printf,2,3);
 int fclose(FILE* file);
-FILE* fdopen(int fd, const char* path);
+FILE* fdopen(int fd, const char* mode);
 int feof(FILE* file);
 int ferror(FILE* file);
 int fflush(FILE* file);
