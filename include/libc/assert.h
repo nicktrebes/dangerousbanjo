@@ -1,7 +1,10 @@
+#ifndef __ASSERT_H__
+#define __ASSERT_H__
+
 /*
  * MIT License
  *
- * libc/arpa/inet.c
+ * include/libc/assert.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,4 +26,14 @@
  * SOFTWARE.
  */
 
-#include <arpa/inet.h>
+#include <kernel/types.h>
+
+#ifdef NDEBUG
+#define assert(ignore) ((void)0)
+#else
+#define assert(test) (_assert(test))
+#endif
+
+void _assert(int test) __noreturn;
+
+#endif

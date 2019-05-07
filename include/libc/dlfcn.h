@@ -1,7 +1,10 @@
+#ifndef __DLFCN_H__
+#define __DLFCN_H__
+
 /*
  * MIT License
  *
- * libc/arpa/inet.c
+ * include/libc/dlfcn.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,4 +26,16 @@
  * SOFTWARE.
  */
 
-#include <arpa/inet.h>
+enum {
+	RTLD_LAZY,
+	RTLD_NOW,
+	RTLD_GLOBAL,
+	RTLD_LOCAL
+};
+
+int dlclose(void* handle);
+char* dlerror(void);
+void* dlopen(const char* path, int flag);
+void* dlsym(void* restrict handle, const char* restrict symbol);
+
+#endif /* ! __DLFCN_H__ */

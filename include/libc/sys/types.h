@@ -28,6 +28,7 @@
 
 #include <asm/mcontext.h>
 #include <kernel/types.h>
+#include <stdint.h>
 
 #define BUFSIZ (4096)
 
@@ -38,6 +39,8 @@ typedef s32    blksize_t;
 typedef u64    clock_t;
 typedef s32    clockid_t;
 typedef s32    dev_t;
+typedef u32    fenv_t;
+typedef u32    fexcept_t;
 typedef uptr_t fpos_t;
 typedef u32    fsblkcnt_t;
 typedef u32    fsfilcnt_t;
@@ -92,6 +95,15 @@ struct cmsghdr {
 	int       cmsg_type;
 };
 
+struct DIR {
+	// TODO
+};
+
+struct dirent {
+	ino_t d_ino;
+	char  d_name[];
+};
+
 struct flock {
 	short l_type;
 	short l_whence;
@@ -109,7 +121,7 @@ struct in_addr {
 };
 
 struct in6_addr {
-	u8 s6_addr[16];
+	uint8_t s6_addr[16];
 };
 
 struct iovec {
@@ -298,9 +310,9 @@ struct sockaddr_in {
 struct sockaddr_in6 {
 	sa_family_t     sin6_family;
 	in_port_t       sin6_port;
-	u32             sin6_flowinfo;
+	uint32_t        sin6_flowinfo;
 	struct in6_addr sin6_addr;
-	u32             sin6_scope_id;
+	uint32_t        sin6_scope_id;
 };
 
 struct sockaddr_storage {
@@ -419,6 +431,7 @@ struct utsname {
 
 /* Structure typedefs */
 
+typedef struct DIR                 DIR;
 typedef struct FILE                FILE;
 typedef struct pthread*            pthread_t; // NOTE: This is a pointer typedef!
 typedef struct pthread_barrier     pthread_barrier_t;

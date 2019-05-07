@@ -1,7 +1,10 @@
+#ifndef __X86_ASM_FENV_H__
+#define __X86_ASM_FENV_H__
+
 /*
  * MIT License
  *
- * libc/arpa/inet.c
+ * arch/x86/include/asm/fenv.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,4 +26,10 @@
  * SOFTWARE.
  */
 
-#include <arpa/inet.h>
+#include <asm/bits.h>
+#ifdef __KERNEL_X86__
+
+// TODO
+
+#endif /* __KERNEL_X86__ */
+#endif /* ! __X86_ASM_FENV_H__ */

@@ -26,7 +26,6 @@
  * SOFTWARE.
  */
 
-#include <stdint.h>
 #include <sys/types.h>
 
 uint32_t htonl(uint32_t);

@@ -1,7 +1,10 @@
+#ifndef __FENV_H__
+#define __FENV_H__
+
 /*
  * MIT License
  *
- * libc/arpa/inet.c
+ * include/libc/fenv.h
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,4 +26,19 @@
  * SOFTWARE.
  */
 
-#include <arpa/inet.h>
+#include <asm/fenv.h>
+#include <sys/types.h>
+
+int feclearexcept(int flags);
+int fegetenv(fenv_t* fenv);
+int fegetexceptflag(fexcept_t* fexcept, int flag);
+int fegetround(void);
+int feholdexcept(fenv_t* fenv);
+int feraiseexcept(int except);
+int fesetenv(const fenv_t* fenv);
+int fesetexceptflag(const fexcept_t* fexcept, int flag);
+int fesetround(int round);
+int fetestexcept(int except);
+int feupdateenv(const fenv_t* fenv);
+
+#endif /* ! __FENV_H__ */

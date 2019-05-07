@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * libc/arpa/inet.c
+ * include/libc/ctype.c
  * Copyright (C) 2019 Nick Trebes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,4 +23,4 @@
  * SOFTWARE.
  */
 
-#include <arpa/inet.h>
+#include <ctype.h>
