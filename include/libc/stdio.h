@@ -29,6 +29,7 @@
 #include <stdarg.h>
 #include <unistd.h>
 
+#define BUFSIZ       (4096)
 #define EOF          ((int)(-1))
 #define FILENAME_MAX (256)
 #define FOPEN_MAX    (8 /* TODO */)

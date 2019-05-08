@@ -30,8 +30,6 @@
 #include <kernel/types.h>
 #include <stdint.h>
 
-#define BUFSIZ (4096)
-
 /* Integer typedefs */
 
 typedef s32    blkcnt_t;
@@ -53,6 +51,7 @@ typedef s32    key_t;
 typedef s32    mode_t;
 typedef u16    msglen_t;
 typedef u16    msgqnum_t;
+typedef u32    nfds_t;
 typedef s32    nlink_t;
 typedef s32    off_t;
 typedef s32    pid_t;
@@ -71,6 +70,7 @@ typedef s32    uid_t;
 
 struct siginfo;
 union  sigval;
+struct sockaddr;
 struct timespec;
 struct timeval;
 
@@ -78,6 +78,43 @@ typedef struct pthread_attr pthread_attr_t;
 typedef struct siginfo      siginfo_t;
 
 /* Structure definitions */
+
+struct _div {
+	int quot;
+	int rem;
+};
+
+struct _glob {
+	size_t gl_pathc;
+	char** gl_pathv;
+	size_t gl_offs;
+};
+
+struct _imaxdiv {
+	intmax_t quot;
+	intmax_t rem;
+};
+
+struct _ldiv {
+	long quot;
+	long rem;
+};
+
+struct _lldiv {
+	long long quot;
+	long long rem;
+};
+
+struct addrinfo {
+	int              ai_flags;
+	int              ai_family;
+	int              ai_socktype;
+	int              ai_protocol;
+	socklen_t        ai_addrlen;
+	struct sockaddr* ai_addr;
+	char*            ai_canonname;
+	struct addrinfo* ai_next;
+};
 
 struct aiocb {
 	int             aio_fildes;
@@ -93,6 +130,15 @@ struct cmsghdr {
 	socklen_t cmsg_len;
 	int       cmsg_level;
 	int       cmsg_type;
+};
+
+struct datum {
+	void*  dptr;
+	size_t dsize;
+};
+
+struct DBM {
+	// TODO
 };
 
 struct DIR {
@@ -117,6 +163,30 @@ struct FILE {
 	fpos_t pos;
 	size_t len, ptr;
 	int    fd, flags;
+};
+
+struct FTW {
+	int base;
+	int level;
+};
+
+struct group {
+	char*  gr_name;
+	gid_t  gr_gid;
+	char** gr_mem;
+};
+
+struct hostent {
+	char*  h_name;
+	char** h_aliases;
+	int    h_addrtype;
+	int    h_length;
+	char** h_addr_list;
+};
+
+struct if_nameindex {
+	unsigned if_index;
+	char*    if_name;
 };
 
 struct in_addr {
@@ -160,6 +230,13 @@ struct linger {
 	int l_linger;
 };
 
+struct mq_attr {
+	long mq_flags;
+	long mq_maxsize;
+	long mq_msgsize;
+	long mq_curmsgs;
+};
+
 struct msghdr {
 	void*         msg_name;
 	socklen_t     msg_namelen;
@@ -181,8 +258,35 @@ struct msqid_ds {
 	time_t          msg_ctime;
 };
 
+struct netent {
+	char*    n_name;
+	char**   n_aliases;
+	int      n_addrtype;
+	uint32_t n_net;
+};
+
+struct passwd {
+	char* pw_name;
+	uid_t pw_uid;
+	gid_t pw_gid;
+	char* pw_dir;
+	char* pw_shell;
+};
+
+struct pollfd {
+	int   fd;
+	short events;
+	short revents;
+};
+
 struct posix_typed_mem_info {
 	size_t posix_tmi_length;
+};
+
+struct protoent {
+	char*  p_name;
+	char** p_aliases;
+	int    p_proto;
 };
 
 struct pthread {
@@ -254,6 +358,13 @@ struct semid_ds {
 	unsigned short  sem_nsems;
 	time_t          sem_otime;
 	time_t          sem_ctime;
+};
+
+struct servent {
+	char*  s_name;
+	char** s_aliases;
+	int    s_port;
+	char*  s_proto;
 };
 
 struct shmid_ds {
@@ -434,6 +545,13 @@ struct utsname {
 
 /* Structure typedefs */
 
+typedef struct _div                div_t;
+typedef struct _glob               glob_t;
+typedef struct _imaxdiv            imaxdiv_t;
+typedef struct _ldiv               ldiv_t;
+typedef struct _lldiv              lldiv_t;
+typedef struct datum               datum;
+typedef struct DBM                 DBM;
 typedef struct DIR                 DIR;
 typedef struct FILE                FILE;
 typedef struct pthread*            pthread_t; // NOTE: This is a pointer typedef!

@@ -25,6 +25,7 @@
 
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define _FILE_OPEN  (1<<0)
 #define _FILE_EOF   (1<<1)
