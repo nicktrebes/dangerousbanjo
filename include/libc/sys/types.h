@@ -57,6 +57,7 @@ typedef s32    off_t;
 typedef s32    pid_t;
 typedef u32    rlim_t;
 typedef u32    sa_family_t;
+typedef int    sem_t;
 typedef u16    shmatt_t;
 typedef u32    sigset_t;
 typedef uptr_t size_t;
@@ -148,6 +149,11 @@ struct DIR {
 struct dirent {
 	ino_t d_ino;
 	char  d_name[];
+};
+
+struct entry {
+	char* key;
+	void* data;
 };
 
 struct flock {
@@ -345,6 +351,14 @@ struct rlimit {
 struct rusage {
 	struct timeval ru_utime;
 	struct timeval ru_stime;
+};
+
+struct sched_param {
+	int             sched_priority;
+	int             sched_ss_low_priority;
+	struct timespec sched_ss_repl_period;
+	struct timespec sched_ss_init_budget;
+	int             sched_ss_max_repl;
 };
 
 struct sembuf {
@@ -553,6 +567,7 @@ typedef struct _lldiv              lldiv_t;
 typedef struct datum               datum;
 typedef struct DBM                 DBM;
 typedef struct DIR                 DIR;
+typedef struct entry               ENTRY;
 typedef struct FILE                FILE;
 typedef struct pthread*            pthread_t; // NOTE: This is a pointer typedef!
 typedef struct pthread_barrier     pthread_barrier_t;
